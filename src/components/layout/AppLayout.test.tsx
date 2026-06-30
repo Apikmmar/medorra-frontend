@@ -1,6 +1,7 @@
 import { describe, it, expect, vi } from "vitest";
 import { render, screen } from "@testing-library/react";
 import { AppLayout } from "./AppLayout";
+import { OfflineProvider } from "@/lib/offline";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -24,9 +25,22 @@ vi.mock("next/link", () => ({
   ),
 }));
 
+// Mock IndexedDB for OfflineProvider
+vi.mock("@/lib/offline/indexed-db", () => ({
+  addEntry: vi.fn(),
+  getAllEntries: vi.fn().mockResolvedValue([]),
+  getEntryCount: vi.fn().mockResolvedValue(0),
+  removeEntry: vi.fn(),
+  clearAll: vi.fn(),
+}));
+
+function renderWithOffline(ui: React.ReactElement) {
+  return render(<OfflineProvider>{ui}</OfflineProvider>);
+}
+
 describe("AppLayout", () => {
   it("renders children content", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div data-testid="child-content">Hello World</div>
       </AppLayout>
@@ -37,7 +51,7 @@ describe("AppLayout", () => {
   });
 
   it("renders the Medorra brand name", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -48,7 +62,7 @@ describe("AppLayout", () => {
   });
 
   it("renders navigation with proper ARIA labels", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -68,7 +82,7 @@ describe("AppLayout", () => {
   });
 
   it("renders all main navigation links", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -89,7 +103,7 @@ describe("AppLayout", () => {
   });
 
   it("renders links with correct href attributes", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -107,7 +121,7 @@ describe("AppLayout", () => {
   });
 
   it("marks active page link with aria-current", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -119,7 +133,7 @@ describe("AppLayout", () => {
   });
 
   it("has a min-width of 320px on the container", () => {
-    const { container } = render(
+    const { container } = renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -131,7 +145,7 @@ describe("AppLayout", () => {
   });
 
   it("renders open menu button for tablet view", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
@@ -144,7 +158,7 @@ describe("AppLayout", () => {
   });
 
   it("renders close menu button in sidebar", () => {
-    render(
+    renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>

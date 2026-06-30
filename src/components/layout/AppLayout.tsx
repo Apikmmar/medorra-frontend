@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
+import { OfflineBanner } from "./OfflineBanner";
 import { MenuIcon } from "./icons";
 
 interface AppLayoutProps {
@@ -19,6 +20,9 @@ export function AppLayout({ children }: AppLayoutProps) {
 
       {/* Main content area */}
       <div className="flex flex-1 flex-col">
+        {/* Offline banner - visible when offline or entries pending */}
+        <OfflineBanner />
+
         {/* Top header bar for tablet with hamburger menu */}
         <header className="sticky top-0 z-20 hidden border-b border-gray-200 bg-white tablet:flex desktop:hidden items-center h-16 px-4">
           <button

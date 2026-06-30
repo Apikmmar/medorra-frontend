@@ -16,17 +16,30 @@ interface FieldErrors {
   notes?: string;
 }
 
+export interface SymptomEntryInitialData {
+  entryId: string;
+  version: number;
+  symptomName?: string;
+  severity?: number;
+  timestamp?: string;
+  notes?: string;
+  [key: string]: unknown;
+}
+
 export interface SymptomEntryFormProps {
+  initialData?: SymptomEntryInitialData;
   onSuccess?: () => void;
   onError?: (error: Error) => void;
 }
 
-export function SymptomEntryForm({ onSuccess, onError }: SymptomEntryFormProps) {
+export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEntryFormProps) {
+  const isEditMode = !!initialData;
+
   const [formData, setFormData] = useState<SymptomFormData>({
-    symptomName: "",
-    severity: 5,
-    timestamp: "",
-    notes: "",
+    symptomName: initialData?.symptomName ?? "",
+    severity: initialData?.severity ?? 5,
+    timestamp: initialData?.timestamp ?? "",
+    notes: initialData?.notes ?? "",
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -149,7 +162,12 @@ export function SymptomEntryForm({ onSuccess, onError }: SymptomEntryFormProps) 
         payload.notes = formData.notes.trim();
       }
 
-      await apiClient.post("/entries", payload);
+      if (isEditMode && initialData) {
+        payload.version = initialData.version;
+        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+      } else {
+        await apiClient.post("/entries", payload);
+      }
       onSuccess?.();
     } catch (err) {
       const errorMessage =
@@ -324,7 +342,7 @@ export function SymptomEntryForm({ onSuccess, onError }: SymptomEntryFormProps) 
         disabled={isSubmitting}
         className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? "Saving..." : "Save Symptom Entry"}
+        {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Symptom Entry"}
       </button>
     </form>
   );

@@ -6,11 +6,14 @@
  */
 
 import { AuthProvider, AuthApiConnector } from "@/lib/auth";
+import { OfflineProvider } from "@/lib/offline";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
     <AuthProvider>
-      <AuthApiConnector>{children}</AuthApiConnector>
+      <AuthApiConnector>
+        <OfflineProvider>{children}</OfflineProvider>
+      </AuthApiConnector>
     </AuthProvider>
   );
 }

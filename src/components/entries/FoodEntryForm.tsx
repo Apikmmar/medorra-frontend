@@ -22,10 +22,28 @@ interface FieldErrors {
   items?: Record<number, { description?: string; tags?: string }>;
 }
 
-export function FoodEntryForm() {
+export interface FoodEntryInitialData {
+  entryId: string;
+  version: number;
+  mealType?: string;
+  items?: FoodItemData[];
+  timestamp?: string;
+  [key: string]: unknown;
+}
+
+export interface FoodEntryFormProps {
+  initialData?: FoodEntryInitialData;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryFormProps = {}) {
+  const isEditMode = !!initialData;
+
   const [formData, setFormData] = useState<FoodEntryFormData>({
-    mealType: "",
-    items: [{ description: "", tags: [] }],
+    mealType: (initialData?.mealType as MealType | "") ?? "",
+    items: initialData?.items?.length ? initialData.items : [{ description: "", tags: [] }],
+    timestamp: initialData?.timestamp,
   });
   const [errors, setErrors] = useState<FieldErrors>({});
   const [tagInputs, setTagInputs] = useState<Record<number, string>>({ 0: "" });
@@ -201,19 +219,29 @@ export function FoodEntryForm() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post("/entries", {
+      const payload: Record<string, unknown> = {
         entryType: "food",
         mealType: formData.mealType,
         items: formData.items,
         ...(formData.timestamp ? { timestamp: formData.timestamp } : {}),
-      });
+      };
+
+      if (isEditMode && initialData) {
+        payload.version = initialData.version;
+        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+      } else {
+        await apiClient.post("/entries", payload);
+      }
       setSubmitSuccess(true);
-      // Reset form
-      setFormData({ mealType: "", items: [{ description: "", tags: [] }] });
-      setTagInputs({ 0: "" });
-      setErrors({});
-    } catch {
-      // Error is handled by apiClient (toast notifications, etc.)
+      if (!isEditMode) {
+        setFormData({ mealType: "", items: [{ description: "", tags: [] }] });
+        setTagInputs({ 0: "" });
+        setErrors({});
+      }
+      onSuccess?.();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to save food entry";
+      onError?.(err instanceof Error ? err : new Error(message));
     } finally {
       setIsSubmitting(false);
     }
@@ -399,7 +427,7 @@ export function FoodEntryForm() {
         disabled={isSubmitting}
         className="w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
       >
-        {isSubmitting ? "Saving..." : "Save Food Entry"}
+        {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Food Entry"}
       </button>
     </form>
   );

@@ -27,8 +27,35 @@ const initialFormData: MedicationFormData = {
   notes: "",
 };
 
-export function MedicationEntryForm() {
-  const [formData, setFormData] = useState<MedicationFormData>(initialFormData);
+export interface MedicationEntryInitialData {
+  entryId: string;
+  version: number;
+  medicationName?: string;
+  dosageAmount?: number;
+  dosageUnit?: string;
+  scheduleType?: "as-needed" | "scheduled";
+  timestamp?: string;
+  notes?: string;
+  [key: string]: unknown;
+}
+
+export interface MedicationEntryFormProps {
+  initialData?: MedicationEntryInitialData;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function MedicationEntryForm({ initialData, onSuccess, onError }: MedicationEntryFormProps) {
+  const isEditMode = !!initialData;
+
+  const [formData, setFormData] = useState<MedicationFormData>({
+    medicationName: initialData?.medicationName ?? "",
+    dosageAmount: initialData?.dosageAmount != null ? String(initialData.dosageAmount) : "",
+    dosageUnit: initialData?.dosageUnit ?? "",
+    scheduleType: initialData?.scheduleType ?? "",
+    timestamp: initialData?.timestamp ?? "",
+    notes: initialData?.notes ?? "",
+  });
   const [errors, setErrors] = useState<MedicationFormErrors>({});
   const [touched, setTouched] = useState<Record<string, boolean>>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -171,20 +198,36 @@ export function MedicationEntryForm() {
           payload.notes = formData.notes;
         }
 
-        await apiClient.post("/entries", payload);
+        if (isEditMode && initialData) {
+          payload.version = initialData.version;
+          await apiClient.put(`/entries/${initialData.entryId}`, payload);
+        } else {
+          await apiClient.post("/entries", payload);
+        }
         setSubmitSuccess(true);
-        setFormData(initialFormData);
-        setTouched({});
-        setErrors({});
+        if (!isEditMode) {
+          setFormData({
+            medicationName: "",
+            dosageAmount: "",
+            dosageUnit: "",
+            scheduleType: "",
+            timestamp: "",
+            notes: "",
+          });
+          setTouched({});
+          setErrors({});
+        }
+        onSuccess?.();
       } catch (err: unknown) {
         const message =
           err instanceof Error ? err.message : "Failed to save medication entry";
         setSubmitError(message);
+        onError?.(err instanceof Error ? err : new Error(message));
       } finally {
         setIsSubmitting(false);
       }
     },
-    [formData, validateAll]
+    [formData, validateAll, isEditMode, initialData, onSuccess, onError]
   );
 
   return (
@@ -396,7 +439,7 @@ export function MedicationEntryForm() {
         disabled={isSubmitting}
         className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? "Saving..." : "Save Medication Entry"}
+        {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Medication Entry"}
       </button>
     </form>
   );

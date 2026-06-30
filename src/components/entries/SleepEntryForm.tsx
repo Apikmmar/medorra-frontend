@@ -64,11 +64,34 @@ const emptySegment = (): SleepSegment => ({
   durationMinutes: 0,
 });
 
-export function SleepEntryForm() {
+export interface SleepEntryInitialData {
+  entryId: string;
+  version: number;
+  segments?: Array<{ startTime: string; endTime: string; durationMinutes?: number }>;
+  qualityRating?: number;
+  notes?: string;
+  [key: string]: unknown;
+}
+
+export interface SleepEntryFormProps {
+  initialData?: SleepEntryInitialData;
+  onSuccess?: () => void;
+  onError?: (error: Error) => void;
+}
+
+export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFormProps = {}) {
+  const isEditMode = !!initialData;
+
   const [formData, setFormData] = useState<SleepFormData>({
-    segments: [emptySegment()],
-    qualityRating: 5,
-    notes: "",
+    segments: initialData?.segments?.length
+      ? initialData.segments.map((seg) => ({
+          startTime: seg.startTime,
+          endTime: seg.endTime,
+          durationMinutes: seg.durationMinutes ?? calculateDurationMinutes(seg.startTime, seg.endTime),
+        }))
+      : [emptySegment()],
+    qualityRating: initialData?.qualityRating ?? 5,
+    notes: initialData?.notes ?? "",
   });
 
   const [errors, setErrors] = useState<ValidationErrors>({
@@ -276,7 +299,7 @@ export function SleepEntryForm() {
 
     setIsSubmitting(true);
     try {
-      await apiClient.post("/entries", {
+      const payload: Record<string, unknown> = {
         entryType: "sleep",
         segments: formData.segments.map((seg) => ({
           startTime: seg.startTime,
@@ -286,18 +309,29 @@ export function SleepEntryForm() {
         totalDuration,
         qualityRating: formData.qualityRating,
         notes: formData.notes || undefined,
-      });
+      };
+
+      if (isEditMode && initialData) {
+        payload.version = initialData.version;
+        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+      } else {
+        await apiClient.post("/entries", payload);
+      }
       setSubmitSuccess(true);
-      setFormData({ segments: [emptySegment()], qualityRating: 5, notes: "" });
-      setErrors({
-        segments: {},
-        overlap: "",
-        totalDuration: "",
-        qualityRating: "",
-        notes: "",
-      });
+      if (!isEditMode) {
+        setFormData({ segments: [emptySegment()], qualityRating: 5, notes: "" });
+        setErrors({
+          segments: {},
+          overlap: "",
+          totalDuration: "",
+          qualityRating: "",
+          notes: "",
+        });
+      }
+      onSuccess?.();
     } catch (err: any) {
       setSubmitError(err.message || "Failed to save sleep entry");
+      onError?.(err instanceof Error ? err : new Error(err.message || "Failed to save sleep entry"));
     } finally {
       setIsSubmitting(false);
     }
@@ -509,7 +543,7 @@ export function SleepEntryForm() {
         disabled={isSubmitting}
         className="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        {isSubmitting ? "Saving..." : "Save Sleep Entry"}
+        {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Sleep Entry"}
       </button>
     </form>
   );
