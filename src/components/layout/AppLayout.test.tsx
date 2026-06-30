@@ -1,0 +1,158 @@
+import { describe, it, expect, vi } from "vitest";
+import { render, screen } from "@testing-library/react";
+import { AppLayout } from "./AppLayout";
+
+// Mock next/navigation
+vi.mock("next/navigation", () => ({
+  usePathname: () => "/",
+}));
+
+// Mock next/link
+vi.mock("next/link", () => ({
+  default: ({
+    children,
+    href,
+    ...props
+  }: {
+    children: React.ReactNode;
+    href: string;
+    [key: string]: any;
+  }) => (
+    <a href={href} {...props}>
+      {children}
+    </a>
+  ),
+}));
+
+describe("AppLayout", () => {
+  it("renders children content", () => {
+    render(
+      <AppLayout>
+        <div data-testid="child-content">Hello World</div>
+      </AppLayout>
+    );
+
+    expect(screen.getByTestId("child-content")).toBeInTheDocument();
+    expect(screen.getByText("Hello World")).toBeInTheDocument();
+  });
+
+  it("renders the Medorra brand name", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    const brandElements = screen.getAllByText("Medorra");
+    expect(brandElements.length).toBeGreaterThan(0);
+  });
+
+  it("renders navigation with proper ARIA labels", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    // Sidebar navigation should have aria-label
+    const sidebarNav = screen.getByRole("navigation", {
+      name: "Main navigation",
+    });
+    expect(sidebarNav).toBeInTheDocument();
+
+    // Bottom navigation should have aria-label
+    const mobileNav = screen.getByRole("navigation", {
+      name: "Mobile navigation",
+    });
+    expect(mobileNav).toBeInTheDocument();
+  });
+
+  it("renders all main navigation links", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    // Check navigation links exist (both in sidebar and bottom nav)
+    const dashboardLinks = screen.getAllByRole("link", { name: /dashboard|home/i });
+    expect(dashboardLinks.length).toBeGreaterThan(0);
+
+    const timelineLinks = screen.getAllByRole("link", { name: /timeline/i });
+    expect(timelineLinks.length).toBeGreaterThan(0);
+
+    const insightsLinks = screen.getAllByRole("link", { name: /insights/i });
+    expect(insightsLinks.length).toBeGreaterThan(0);
+
+    const settingsLinks = screen.getAllByRole("link", { name: /settings/i });
+    expect(settingsLinks.length).toBeGreaterThan(0);
+  });
+
+  it("renders links with correct href attributes", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    // Check specific routes
+    const links = screen.getAllByRole("link");
+    const hrefs = links.map((link) => link.getAttribute("href"));
+
+    expect(hrefs).toContain("/");
+    expect(hrefs).toContain("/entries/new");
+    expect(hrefs).toContain("/timeline");
+    expect(hrefs).toContain("/insights");
+    expect(hrefs).toContain("/settings");
+  });
+
+  it("marks active page link with aria-current", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    // Since we mock pathname as "/", dashboard links should be marked current
+    const currentLinks = screen.getAllByRole("link", { current: "page" });
+    expect(currentLinks.length).toBeGreaterThan(0);
+  });
+
+  it("has a min-width of 320px on the container", () => {
+    const { container } = render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    // The root container div should have min-w-[320px] class
+    const rootDiv = container.firstElementChild;
+    expect(rootDiv?.className).toContain("min-w-[320px]");
+  });
+
+  it("renders open menu button for tablet view", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    const openMenuBtn = screen.getByRole("button", {
+      name: "Open navigation menu",
+    });
+    expect(openMenuBtn).toBeInTheDocument();
+  });
+
+  it("renders close menu button in sidebar", () => {
+    render(
+      <AppLayout>
+        <div>Content</div>
+      </AppLayout>
+    );
+
+    const closeMenuBtn = screen.getByRole("button", {
+      name: "Close navigation menu",
+    });
+    expect(closeMenuBtn).toBeInTheDocument();
+  });
+});
