@@ -142,6 +142,48 @@ export const cognitoService = {
     });
     cognitoUser.signOut();
   },
+
+  /**
+   * Confirm a user's email with the verification code.
+   */
+  confirmSignUp(email: string, code: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const userPool = getUserPool();
+      const cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: userPool,
+      });
+
+      cognitoUser.confirmRegistration(code, true, (err) => {
+        if (err) {
+          reject(mapCognitoError(err));
+          return;
+        }
+        resolve();
+      });
+    });
+  },
+
+  /**
+   * Resend the verification code to the user's email.
+   */
+  resendConfirmationCode(email: string): Promise<void> {
+    return new Promise((resolve, reject) => {
+      const userPool = getUserPool();
+      const cognitoUser = new CognitoUser({
+        Username: email,
+        Pool: userPool,
+      });
+
+      cognitoUser.resendConfirmationCode((err) => {
+        if (err) {
+          reject(mapCognitoError(err));
+          return;
+        }
+        resolve();
+      });
+    });
+  },
 };
 
 /**

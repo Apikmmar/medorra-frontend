@@ -49,7 +49,7 @@ describe("tokenStorage", () => {
   describe("getAccessToken", () => {
     it("returns the access token when tokens are stored", () => {
       tokenStorage.setTokens(mockTokens);
-      expect(tokenStorage.getAccessToken()).toBe("test-access-token");
+      expect(tokenStorage.getAccessToken()).toBe("test-id-token");
     });
 
     it("returns null when no tokens are stored", () => {

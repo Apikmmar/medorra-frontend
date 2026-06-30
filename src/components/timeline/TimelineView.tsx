@@ -115,7 +115,7 @@ export function TimelineView() {
       setError(null);
 
       const response = await apiClient.get<EntriesResponse>(
-        `/entries?pageSize=${PAGE_SIZE}&page=${pageNum}`
+        `/entries/timeline?pageSize=${PAGE_SIZE}&page=${pageNum}`
       );
 
       const data = response.data;

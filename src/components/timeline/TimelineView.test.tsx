@@ -182,7 +182,7 @@ describe("TimelineView", () => {
     // Both entries should be visible
     expect(screen.getByText("Headache — severity 7")).toBeInTheDocument();
     expect(mockGet).toHaveBeenCalledTimes(2);
-    expect(mockGet).toHaveBeenCalledWith("/entries?pageSize=50&page=2");
+    expect(mockGet).toHaveBeenCalledWith("/entries/timeline?pageSize=50&page=2");
   });
 
   it("shows empty state when no entries exist", async () => {
@@ -236,7 +236,7 @@ describe("TimelineView", () => {
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith("/entries?pageSize=50&page=1");
+      expect(mockGet).toHaveBeenCalledWith("/entries/timeline?pageSize=50&page=1");
     });
   });
 

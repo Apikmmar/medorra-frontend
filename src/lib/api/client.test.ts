@@ -37,7 +37,7 @@ describe("apiClient", () => {
         expect.any(String),
         expect.objectContaining({
           headers: expect.objectContaining({
-            Authorization: "Bearer my-access-token",
+            Authorization: "Bearer my-id-token",
           }),
         })
       );
@@ -176,7 +176,7 @@ describe("apiClient", () => {
       });
 
       const result = await apiClient.get("/entries");
-      expect(result.data).toEqual({ data: "success" });
+      expect(result.data).toEqual("success");
       expect(mockRefresh).toHaveBeenCalledOnce();
       expect(mockFetch).toHaveBeenCalledTimes(2);
     });

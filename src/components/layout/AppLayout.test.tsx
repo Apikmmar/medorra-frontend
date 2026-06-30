@@ -6,6 +6,23 @@ import { OfflineProvider } from "@/lib/offline";
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
   usePathname: () => "/",
+  useRouter: () => ({ replace: vi.fn(), push: vi.fn() }),
+}));
+
+// Mock useAuth to simulate an authenticated user
+vi.mock("@/lib/auth", () => ({
+  useAuth: () => ({
+    isAuthenticated: true,
+    isLoading: false,
+    isSessionExpired: false,
+    user: { userId: "test-user", email: "test@example.com" },
+    login: vi.fn(),
+    register: vi.fn(),
+    logout: vi.fn(),
+    refreshToken: vi.fn(),
+  }),
+  AuthProvider: ({ children }: { children: React.ReactNode }) => <>{children}</>,
+  AuthApiConnector: ({ children }: { children: React.ReactNode }) => <>{children}</>,
 }));
 
 // Mock next/link

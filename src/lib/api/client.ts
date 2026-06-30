@@ -100,7 +100,9 @@ async function makeRequest<T>(
     );
   }
 
-  const data = (await response.json()) as T;
+  const body = await response.json();
+  // Backend wraps responses in { status, message, data } envelope — unwrap it
+  const data = (body.data !== undefined ? body.data : body) as T;
   return { data, status: response.status, ok: true };
 }
 

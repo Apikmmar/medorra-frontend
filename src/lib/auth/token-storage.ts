@@ -59,7 +59,7 @@ export const tokenStorage = {
    */
   getAccessToken(): string | null {
     const tokens = this.getTokens();
-    return tokens?.accessToken ?? null;
+    return tokens?.idToken ?? null;
   },
 
   /**

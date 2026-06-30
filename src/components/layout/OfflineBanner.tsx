@@ -9,11 +9,22 @@
  * - Orange banner for sync conflicts
  */
 
+import { useEffect, useState } from "react";
 import { useOffline } from "@/lib/offline";
 
 export function OfflineBanner() {
   const { isOnline, pendingCount, isAtCapacity, isSyncing, conflicts, dismissConflict } =
     useOffline();
+
+  // Defer rendering until after hydration to avoid server/client mismatch
+  const [mounted, setMounted] = useState(false);
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
 
   return (
     <>
