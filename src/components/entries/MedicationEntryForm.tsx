@@ -200,9 +200,9 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
         if (isEditMode && initialData) {
           payload.version = initialData.version;
-          await apiClient.put(`/entries/${initialData.entryId}`, payload);
+          await apiClient.put(`/entries/medication/${initialData.entryId}`, payload);
         } else {
-          await apiClient.post("/entries", payload);
+          await apiClient.post("/entries/medication", payload);
         }
         setSubmitSuccess(true);
         if (!isEditMode) {

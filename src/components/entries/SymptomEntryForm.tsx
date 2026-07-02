@@ -164,9 +164,9 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
 
       if (isEditMode && initialData) {
         payload.version = initialData.version;
-        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+        await apiClient.put(`/entries/symptom/${initialData.entryId}`, payload);
       } else {
-        await apiClient.post("/entries", payload);
+        await apiClient.post("/entries/symptom", payload);
       }
       onSuccess?.();
     } catch (err) {

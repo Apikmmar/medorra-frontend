@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -18,8 +18,13 @@ export default function LoginPage() {
   const [loading, setLoading] = useState(false);
 
   // Redirect if already authenticated
+  useEffect(() => {
+    if (isAuthenticated) {
+      router.replace("/");
+    }
+  }, [isAuthenticated, router]);
+
   if (isAuthenticated) {
-    router.replace("/");
     return null;
   }
 

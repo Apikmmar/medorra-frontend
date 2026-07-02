@@ -313,9 +313,9 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
       if (isEditMode && initialData) {
         payload.version = initialData.version;
-        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+        await apiClient.put(`/entries/sleep/${initialData.entryId}`, payload);
       } else {
-        await apiClient.post("/entries", payload);
+        await apiClient.post("/entries/sleep", payload);
       }
       setSubmitSuccess(true);
       if (!isEditMode) {

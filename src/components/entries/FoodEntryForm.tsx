@@ -228,9 +228,9 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
 
       if (isEditMode && initialData) {
         payload.version = initialData.version;
-        await apiClient.put(`/entries/${initialData.entryId}`, payload);
+        await apiClient.put(`/entries/food/${initialData.entryId}`, payload);
       } else {
-        await apiClient.post("/entries", payload);
+        await apiClient.post("/entries/food", payload);
       }
       setSubmitSuccess(true);
       if (!isEditMode) {
