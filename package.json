@@ -3,16 +3,16 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
+    "dev": "next dev -p 3005",
     "build": "next build",
-    "start": "next start",
+    "start": "next start -p 3005",
     "lint": "next lint",
     "test": "vitest run",
     "test:watch": "vitest"
   },
   "dependencies": {
     "amazon-cognito-identity-js": "^6.3.12",
-    "next": "^16.2.10",
+    "next": "^14.2.35",
     "react": "^18.3.0",
     "react-dom": "^18.3.0"
   },
