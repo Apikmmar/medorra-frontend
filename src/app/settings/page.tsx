@@ -26,42 +26,42 @@ export default function SettingsPage() {
   return (
     <div className="max-w-2xl mx-auto space-y-8">
       <div>
-        <h1 className="text-2xl font-bold text-gray-900">Settings</h1>
-        <p className="mt-1 text-gray-600">
+        <h1 className="text-2xl font-bold text-fg">Settings</h1>
+        <p className="mt-1 text-muted">
           Manage your account and pattern analysis preferences.
         </p>
       </div>
 
       {/* Account info */}
-      <section className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Account</h2>
-        <div className="mt-4 space-y-2 text-sm text-gray-600">
-          <p><span className="font-medium text-gray-700">Email:</span> {user?.email || "—"}</p>
-          <p><span className="font-medium text-gray-700">User ID:</span> {user?.userId || "—"}</p>
+      <section className="rounded-2xl border border-border bg-surface p-6 shadow-card">
+        <h2 className="text-lg font-semibold text-fg">Account</h2>
+        <div className="mt-4 space-y-2 text-sm text-muted">
+          <p><span className="font-medium text-fg">Email:</span> {user?.email || "—"}</p>
+          <p><span className="font-medium text-fg">User ID:</span> {user?.userId || "—"}</p>
         </div>
         <button
           onClick={logout}
-          className="mt-4 rounded-md border border-red-300 px-4 py-2 text-sm font-medium text-red-700 hover:bg-red-50"
+          className="mt-4 rounded-lg border border-danger/30 px-4 py-2 text-sm font-medium text-danger transition-colors hover:bg-danger/10"
         >
           Sign out
         </button>
       </section>
 
       {/* Pattern analysis settings */}
-      <section className="rounded-lg border border-gray-200 bg-white p-6">
-        <h2 className="text-lg font-semibold text-gray-900">Pattern Analysis</h2>
-        <p className="mt-1 text-sm text-gray-500">
+      <section className="rounded-2xl border border-border bg-surface p-6 shadow-card">
+        <h2 className="text-lg font-semibold text-fg">Pattern Analysis</h2>
+        <p className="mt-1 text-sm text-muted">
           Configure the time window for detecting correlations between your entries and symptoms.
         </p>
 
         {message && (
-          <div className={`mt-3 rounded-md p-3 text-sm ${message.includes("success") ? "bg-green-50 text-green-700" : "bg-red-50 text-red-700"}`} role="status">
+          <div className={`mt-3 rounded-lg p-3 text-sm ${message.includes("success") ? "bg-success/10 text-success" : "bg-danger/10 text-danger"}`} role="status">
             {message}
           </div>
         )}
 
         <div className="mt-4">
-          <label htmlFor="timeWindow" className="block text-sm font-medium text-gray-700">
+          <label htmlFor="timeWindow" className="label">
             Correlation time window (days)
           </label>
           <div className="mt-1 flex items-center gap-3">
@@ -72,16 +72,16 @@ export default function SettingsPage() {
               max={7}
               value={timeWindow}
               onChange={(e) => setTimeWindow(Math.min(7, Math.max(1, parseInt(e.target.value) || 1)))}
-              className="w-20 rounded-md border border-gray-300 px-3 py-2 text-gray-900 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+              className="input w-20"
             />
-            <span className="text-sm text-gray-500">1–7 days (default: 3)</span>
+            <span className="text-sm text-muted">1–7 days (default: 3)</span>
           </div>
         </div>
 
         <button
           onClick={handleSaveTimeWindow}
           disabled={saving}
-          className="mt-4 rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 disabled:opacity-50"
+          className="btn-primary mt-4"
         >
           {saving ? "Saving..." : "Save"}
         </button>

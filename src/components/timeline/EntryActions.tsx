@@ -15,7 +15,7 @@ export function EntryActions({ entry, onEdit, onDelete }: EntryActionsProps) {
       <button
         type="button"
         onClick={onEdit}
-        className="rounded p-1.5 text-gray-500 hover:bg-gray-100 hover:text-gray-700 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+        className="rounded p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-fg"
         aria-label={`Edit ${entry.entryType} entry`}
       >
         <svg
@@ -31,7 +31,7 @@ export function EntryActions({ entry, onEdit, onDelete }: EntryActionsProps) {
       <button
         type="button"
         onClick={onDelete}
-        className="rounded p-1.5 text-gray-500 hover:bg-red-50 hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-red-500"
+        className="rounded p-1.5 text-muted transition-colors hover:bg-danger/10 hover:text-danger"
         aria-label={`Delete ${entry.entryType} entry`}
       >
         <svg

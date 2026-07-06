@@ -33,14 +33,14 @@ function NewEntryContent() {
 
   return (
     <div className="mx-auto max-w-2xl">
-      <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+      <h1 className="text-2xl font-bold tracking-tight text-fg">
         Log Entry
       </h1>
-      <p className="mt-1 text-sm text-gray-500">Record a new diary entry.</p>
+      <p className="mt-1 text-sm text-muted">Record a new diary entry.</p>
 
       {successMessage && (
         <div
-          className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700 animate-fade-in"
+          className="mt-4 flex items-center gap-2 rounded-xl border border-success/20 bg-success/10 p-3 text-sm text-success animate-fade-in"
           role="status"
         >
           <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -67,13 +67,13 @@ function NewEntryContent() {
               aria-pressed={active}
               className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
                 active
-                  ? "border-brand-500 bg-brand-50 text-brand-700 shadow-sm"
-                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+                  ? "border-accent bg-accent/10 text-accent-text"
+                  : "border-border bg-surface text-muted hover:border-border-strong hover:bg-surface-2"
               }`}
             >
               <span
                 className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ${
-                  active ? v.avatar : "bg-gray-100 text-gray-400"
+                  active ? v.avatar : "bg-surface-2 text-faint"
                 }`}
                 aria-hidden="true"
               >

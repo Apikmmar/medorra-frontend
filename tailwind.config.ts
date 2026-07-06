@@ -1,5 +1,8 @@
 import type { Config } from "tailwindcss";
 
+/** Consume an RGB-channel CSS variable while preserving opacity utilities. */
+const token = (name: string) => `rgb(var(${name}) / <alpha-value>)`;
+
 const config: Config = {
   content: [
     "./src/pages/**/*.{js,ts,jsx,tsx,mdx}",
@@ -14,23 +17,48 @@ const config: Config = {
         desktop: "1024px",
       },
       colors: {
+        // Semantic tokens (wired to CSS variables in globals.css)
+        bg: token("--bg"),
+        surface: token("--surface"),
+        "surface-2": token("--surface-2"),
+        "surface-3": token("--surface-3"),
+        border: token("--border"),
+        "border-strong": token("--border-strong"),
+        fg: token("--fg"),
+        muted: token("--muted"),
+        faint: token("--faint"),
+        accent: {
+          DEFAULT: token("--accent"),
+          hover: token("--accent-hover"),
+          fg: token("--accent-fg"),
+          text: token("--accent-text"),
+        },
+        success: token("--success"),
+        danger: token("--danger"),
+        warning: token("--warning"),
+        info: token("--info"),
+
+        // Legacy alias: existing brand-* usages now resolve to the teal accent.
         brand: {
-          50: "#eef2ff",
-          100: "#e0e7ff",
-          200: "#c7d2fe",
-          300: "#a5b4fc",
-          400: "#818cf8",
-          500: "#6366f1",
-          600: "#4f46e5",
-          700: "#4338ca",
-          800: "#3730a3",
-          900: "#312e81",
+          50: "#f0fdfa",
+          100: "#ccfbf1",
+          200: "#99f6e4",
+          300: "#5eead4",
+          400: "#2dd4bf",
+          500: "#14b8a6",
+          600: "#0d9488",
+          700: "#0f766e",
+          800: "#115e59",
+          900: "#134e4a",
         },
       },
+      borderColor: {
+        // Bare `border` (no color) uses the token instead of gray-200.
+        DEFAULT: token("--border"),
+      },
       boxShadow: {
-        card: "0 1px 2px rgba(16, 24, 40, 0.05), 0 1px 3px rgba(16, 24, 40, 0.08)",
-        "card-hover":
-          "0 4px 6px -1px rgba(16, 24, 40, 0.08), 0 2px 4px -2px rgba(16, 24, 40, 0.06)",
+        card: "0 1px 2px rgba(0, 0, 0, 0.4), 0 1px 3px rgba(0, 0, 0, 0.3)",
+        "card-hover": "0 6px 16px -4px rgba(0, 0, 0, 0.55)",
       },
       borderRadius: {
         xl: "0.875rem",

@@ -183,11 +183,8 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
       {/* Symptom Name */}
       <div>
-        <label
-          htmlFor="symptomName"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Symptom Name <span className="text-red-500">*</span>
+        <label htmlFor="symptomName" className="label">
+          Symptom Name <span className="text-danger">*</span>
         </label>
         <input
           id="symptomName"
@@ -197,20 +194,12 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
           onChange={(e) => handleChange("symptomName", e.target.value)}
           onBlur={() => handleBlur("symptomName")}
           placeholder="e.g., Headache, Nausea, Fatigue"
-          className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-            errors.symptomName
-              ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 focus:border-indigo-500"
-          }`}
+          className={`input mt-1 ${errors.symptomName ? "input-error" : ""}`}
           aria-invalid={!!errors.symptomName}
           aria-describedby={errors.symptomName ? "symptomName-error" : undefined}
         />
         {errors.symptomName && (
-          <p
-            id="symptomName-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="symptomName-error" className="form-error" role="alert">
             {errors.symptomName}
           </p>
         )}
@@ -218,10 +207,7 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
 
       {/* Severity */}
       <div>
-        <label
-          htmlFor="severity"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="severity" className="label">
           Severity (1-10)
         </label>
         <div className="mt-1 flex items-center gap-4">
@@ -246,21 +232,13 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
             value={formData.severity}
             onChange={(e) => handleSeverityChange(e.target.value)}
             onBlur={() => handleBlur("severity")}
-            className={`w-16 rounded-md border px-2 py-2 text-center text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-              errors.severity
-                ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                : "border-gray-300 focus:border-indigo-500"
-            }`}
+            className={`input w-16 px-2 text-center ${errors.severity ? "input-error" : ""}`}
             aria-invalid={!!errors.severity}
             aria-describedby={errors.severity ? "severity-error" : undefined}
           />
         </div>
         {errors.severity && (
-          <p
-            id="severity-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="severity-error" className="form-error" role="alert">
             {errors.severity}
           </p>
         )}
@@ -268,33 +246,27 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
 
       {/* Timestamp */}
       <div>
-        <label
-          htmlFor="timestamp"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="timestamp" className="label">
           Timestamp{" "}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="text-faint font-normal">(optional)</span>
         </label>
         <input
           id="timestamp"
           type="datetime-local"
           value={formData.timestamp}
           onChange={(e) => handleChange("timestamp", e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:border-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+          className="input mt-1"
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="form-hint">
           Defaults to current time if left empty.
         </p>
       </div>
 
       {/* Notes */}
       <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="notes" className="label">
           Notes{" "}
-          <span className="text-gray-400 font-normal">(optional)</span>
+          <span className="text-faint font-normal">(optional)</span>
         </label>
         <textarea
           id="notes"
@@ -304,23 +276,19 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
           onChange={(e) => handleChange("notes", e.target.value)}
           onBlur={() => handleBlur("notes")}
           placeholder="Any additional details about this symptom..."
-          className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-            errors.notes
-              ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-              : "border-gray-300 focus:border-indigo-500"
-          }`}
+          className={`input mt-1 ${errors.notes ? "input-error" : ""}`}
           aria-invalid={!!errors.notes}
           aria-describedby={errors.notes ? "notes-error" : undefined}
         />
         <div className="mt-1 flex justify-between">
           {errors.notes ? (
-            <p id="notes-error" className="text-sm text-red-600" role="alert">
+            <p id="notes-error" className="text-sm text-danger" role="alert">
               {errors.notes}
             </p>
           ) : (
             <span />
           )}
-          <span className="text-xs text-gray-400">
+          <span className="text-xs text-faint">
             {formData.notes.length}/2000
           </span>
         </div>
@@ -329,10 +297,10 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
       {/* Submit Error */}
       {submitError && (
         <div
-          className="rounded-md bg-red-50 border border-red-200 p-3"
+          className="rounded-lg bg-danger/10 border border-danger/20 p-3"
           role="alert"
         >
-          <p className="text-sm text-red-700">{submitError}</p>
+          <p className="text-sm text-danger">{submitError}</p>
         </div>
       )}
 
@@ -340,7 +308,7 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full"
       >
         {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Symptom Entry"}
       </button>

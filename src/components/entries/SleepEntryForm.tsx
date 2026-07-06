@@ -339,19 +339,19 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" aria-label="Sleep entry form">
-      <h2 className="text-xl font-semibold text-gray-900">Log Sleep</h2>
+      <h2 className="text-xl font-semibold text-fg">Log Sleep</h2>
 
       {/* Segments */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-700">
+          <h3 className="text-sm font-medium text-muted">
             Sleep Segments ({formData.segments.length}/10)
           </h3>
           {formData.segments.length < 10 && (
             <button
               type="button"
               onClick={addSegment}
-              className="rounded-md bg-indigo-50 px-3 py-1.5 text-sm font-medium text-indigo-700 hover:bg-indigo-100"
+              className="btn-secondary px-3 py-1.5"
             >
               Add Segment
             </button>
@@ -361,17 +361,17 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
         {formData.segments.map((segment, index) => (
           <div
             key={index}
-            className="rounded-lg border border-gray-200 bg-gray-50 p-4 space-y-3"
+            className="rounded-lg border border-border bg-surface-2 p-4 space-y-3"
           >
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">
+              <span className="text-sm font-medium text-muted">
                 Segment {index + 1}
               </span>
               {formData.segments.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeSegment(index)}
-                  className="text-sm text-red-600 hover:text-red-800"
+                  className="text-sm text-danger hover:brightness-110"
                   aria-label={`Remove segment ${index + 1}`}
                 >
                   Remove
@@ -383,7 +383,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
               <div>
                 <label
                   htmlFor={`segment-start-${index}`}
-                  className="block text-sm text-gray-600"
+                  className="block text-sm text-muted"
                 >
                   Start Time
                 </label>
@@ -394,7 +394,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
                   onChange={(e) =>
                     updateSegment(index, "startTime", e.target.value)
                   }
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="input mt-1"
                   required
                 />
               </div>
@@ -402,7 +402,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
               <div>
                 <label
                   htmlFor={`segment-end-${index}`}
-                  className="block text-sm text-gray-600"
+                  className="block text-sm text-muted"
                 >
                   End Time
                 </label>
@@ -413,15 +413,15 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
                   onChange={(e) =>
                     updateSegment(index, "endTime", e.target.value)
                   }
-                  className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+                  className="input mt-1"
                   required
                 />
               </div>
 
               <div>
-                <span className="block text-sm text-gray-600">Duration</span>
+                <span className="block text-sm text-muted">Duration</span>
                 <p
-                  className="mt-1 rounded-md bg-white border border-gray-200 px-3 py-2 text-sm text-gray-700"
+                  className="mt-1 rounded-lg bg-surface border border-border px-3 py-2 text-sm text-fg"
                   data-testid={`segment-duration-${index}`}
                 >
                   {formatDuration(segment.durationMinutes)}
@@ -430,7 +430,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
             </div>
 
             {errors.segments[index] && (
-              <p className="text-sm text-red-600" role="alert">
+              <p className="text-sm text-danger" role="alert">
                 {errors.segments[index]}
               </p>
             )}
@@ -438,7 +438,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
         ))}
 
         {errors.overlap && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {errors.overlap}
           </p>
         )}
@@ -446,17 +446,17 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
       {/* Total Duration */}
       <div>
-        <span className="block text-sm font-medium text-gray-700">
+        <span className="block text-sm font-medium text-muted">
           Total Duration
         </span>
         <p
-          className="mt-1 text-lg font-semibold text-gray-900"
+          className="mt-1 text-lg font-semibold text-fg"
           data-testid="total-duration"
         >
           {formatDuration(totalDuration)}
         </p>
         {errors.totalDuration && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {errors.totalDuration}
           </p>
         )}
@@ -464,10 +464,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
       {/* Quality Rating */}
       <div>
-        <label
-          htmlFor="quality-rating"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="quality-rating" className="label">
           Sleep Quality (1-10)
         </label>
         <div className="mt-1 flex items-center gap-3">
@@ -488,12 +485,12 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
             step={1}
             value={formData.qualityRating}
             onChange={(e) => handleQualityChange(Number(e.target.value))}
-            className="w-16 rounded-md border border-gray-300 px-2 py-1 text-center text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+            className="input w-16 px-2 text-center"
             aria-label="Quality rating number input"
           />
         </div>
         {errors.qualityRating && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {errors.qualityRating}
           </p>
         )}
@@ -501,10 +498,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
       {/* Notes */}
       <div>
-        <label
-          htmlFor="sleep-notes"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="sleep-notes" className="label">
           Notes (optional)
         </label>
         <textarea
@@ -513,14 +507,14 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
           onChange={(e) => handleNotesChange(e.target.value)}
           maxLength={1000}
           rows={3}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
+          className="input mt-1"
           placeholder="Any notes about your sleep..."
         />
-        <p className="mt-1 text-xs text-gray-500">
+        <p className="form-hint">
           {formData.notes.length}/1000 characters
         </p>
         {errors.notes && (
-          <p className="text-sm text-red-600" role="alert">
+          <p className="text-sm text-danger" role="alert">
             {errors.notes}
           </p>
         )}
@@ -528,12 +522,12 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
 
       {/* Submit */}
       {submitError && (
-        <p className="text-sm text-red-600" role="alert">
+        <p className="text-sm text-danger" role="alert">
           {submitError}
         </p>
       )}
       {submitSuccess && (
-        <p className="text-sm text-green-600" role="status">
+        <p className="text-sm text-success" role="status">
           Sleep entry saved successfully!
         </p>
       )}
@@ -541,7 +535,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-indigo-600 px-4 py-2.5 text-sm font-medium text-white hover:bg-indigo-700 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full"
       >
         {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Sleep Entry"}
       </button>

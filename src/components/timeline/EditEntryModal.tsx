@@ -102,23 +102,23 @@ export function EditEntryModal({
 
   return (
     <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 overflow-y-auto"
+      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm overflow-y-auto"
       role="dialog"
       aria-modal="true"
       aria-labelledby="edit-modal-title"
     >
-      <div className="mx-4 my-8 w-full max-w-lg rounded-lg bg-white p-6 shadow-xl">
+      <div className="mx-4 my-8 w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-xl">
         <div className="flex items-center justify-between mb-4">
           <h2
             id="edit-modal-title"
-            className="text-lg font-semibold text-gray-900"
+            className="text-lg font-semibold text-fg"
           >
             Edit {entry.entryType.charAt(0).toUpperCase() + entry.entryType.slice(1)} Entry
           </h2>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-gray-400 hover:text-gray-600 focus:outline-none focus:ring-2 focus:ring-indigo-500"
+            className="rounded p-1 text-muted transition-colors hover:text-fg"
             aria-label="Close edit modal"
           >
             <svg
@@ -139,14 +139,14 @@ export function EditEntryModal({
 
         {conflictError && (
           <div
-            className="mb-4 rounded-md bg-yellow-50 border border-yellow-200 p-3"
+            className="mb-4 rounded-lg bg-warning/10 border border-warning/20 p-3"
             role="alert"
           >
-            <p className="text-sm text-yellow-800">{conflictError}</p>
+            <p className="text-sm text-warning">{conflictError}</p>
             <button
               type="button"
               onClick={handleRefresh}
-              className="mt-2 rounded-md bg-yellow-100 px-3 py-1 text-sm font-medium text-yellow-800 hover:bg-yellow-200 focus:outline-none focus:ring-2 focus:ring-yellow-500"
+              className="mt-2 rounded-lg bg-warning/15 px-3 py-1 text-sm font-medium text-warning hover:bg-warning/25"
             >
               Refresh
             </button>
@@ -155,10 +155,10 @@ export function EditEntryModal({
 
         {notFoundError && (
           <div
-            className="mb-4 rounded-md bg-red-50 border border-red-200 p-3"
+            className="mb-4 rounded-lg bg-danger/10 border border-danger/20 p-3"
             role="alert"
           >
-            <p className="text-sm text-red-700">{notFoundError}</p>
+            <p className="text-sm text-danger">{notFoundError}</p>
           </div>
         )}
 

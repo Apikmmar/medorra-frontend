@@ -59,7 +59,7 @@ export function PasswordInput({
 
   return (
     <div>
-      <label htmlFor={id} className="block text-sm font-medium text-gray-700">
+      <label htmlFor={id} className="label">
         {label}
       </label>
       <div className="relative mt-1">
@@ -75,29 +75,29 @@ export function PasswordInput({
           onCopy={handlePrevent}
           onPaste={handlePrevent}
           onCut={handlePrevent}
-          className="block w-full rounded-md border border-gray-300 px-3 py-2 pr-10 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+          className="input pr-10"
           placeholder={placeholder}
         />
         <button
           type="button"
           onClick={() => setVisible(!visible)}
-          className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-600"
+          className="absolute inset-y-0 right-0 flex items-center pr-3 text-muted hover:text-fg"
           aria-label={visible ? "Hide password" : "Show password"}
         >
           {visible ? <EyeOffIcon /> : <EyeIcon />}
         </button>
       </div>
-      {helpText && !showRules && <p className="mt-1 text-xs text-gray-500">{helpText}</p>}
+      {helpText && !showRules && <p className="form-hint">{helpText}</p>}
       {showRules && value.length > 0 && (
         <ul className="mt-2 space-y-1">
           {rules.map((rule) => (
             <li key={rule.label} className="flex items-center gap-2 text-xs">
               {rule.met ? (
-                <CheckIcon className="h-3.5 w-3.5 text-green-500" />
+                <CheckIcon className="h-3.5 w-3.5 text-success" />
               ) : (
-                <XIcon className="h-3.5 w-3.5 text-gray-300" />
+                <XIcon className="h-3.5 w-3.5 text-faint" />
               )}
-              <span className={rule.met ? "text-green-700" : "text-gray-500"}>
+              <span className={rule.met ? "text-success" : "text-muted"}>
                 {rule.label}
               </span>
             </li>

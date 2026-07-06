@@ -38,18 +38,18 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={`
-          fixed top-0 left-0 z-40 h-full w-64 transform bg-white shadow-lg transition-transform duration-200 ease-in-out
-          desktop:translate-x-0 desktop:static desktop:z-0 desktop:shadow-none desktop:border-r desktop:border-gray-200
+          fixed top-0 left-0 z-40 h-full w-64 transform bg-surface shadow-lg transition-transform duration-200 ease-in-out
+          desktop:translate-x-0 desktop:static desktop:z-0 desktop:shadow-none desktop:border-r desktop:border-border
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
         aria-label="Main navigation"
         role="navigation"
       >
-        <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
+        <div className="flex h-16 items-center justify-between border-b border-border px-4">
           <Logo />
           <button
             onClick={onClose}
-            className="desktop:hidden rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"
+            className="desktop:hidden rounded-md p-1 text-muted hover:bg-surface-2 hover:text-fg"
             aria-label="Close navigation menu"
           >
             <span className="h-5 w-5 block">

@@ -30,9 +30,9 @@ export interface InsightsResponse {
 }
 
 function getConfidenceColor(score: number): string {
-  if (score >= 0.8) return "bg-green-100 text-green-800";
-  if (score >= 0.5) return "bg-yellow-100 text-yellow-800";
-  return "bg-orange-100 text-orange-800";
+  if (score >= 0.8) return "bg-success/15 text-success";
+  if (score >= 0.5) return "bg-warning/15 text-warning";
+  return "bg-danger/15 text-danger";
 }
 
 function getConfidenceWidth(score: number): string {
@@ -89,19 +89,19 @@ export function InsightsPanel() {
         role="status"
         aria-label="Loading insights"
       >
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        <span className="ml-3 text-sm text-gray-600">Loading insights...</span>
+        <div className="animate-spin rounded-full h-8 w-8 border-2 border-border border-t-accent"></div>
+        <span className="ml-3 text-sm text-muted">Loading insights...</span>
       </div>
     );
   }
 
   if (error) {
     return (
-      <div className="rounded-md bg-red-50 border border-red-200 p-4" role="alert">
-        <p className="text-sm text-red-700">{error}</p>
+      <div className="rounded-xl bg-danger/10 border border-danger/20 p-4" role="alert">
+        <p className="text-sm text-danger">{error}</p>
         <button
           onClick={() => fetchInsights()}
-          className="mt-2 text-sm font-medium text-red-600 hover:text-red-500 underline"
+          className="mt-2 text-sm font-medium text-danger hover:brightness-110 underline"
         >
           Try again
         </button>
@@ -113,11 +113,11 @@ export function InsightsPanel() {
     <div className="space-y-6">
       {/* Disclaimer - always shown */}
       <div
-        className="rounded-md bg-blue-50 border border-blue-200 p-4"
+        className="rounded-xl bg-info/10 border border-info/20 p-4"
         role="note"
         aria-label="Insights disclaimer"
       >
-        <p className="text-sm text-blue-800">
+        <p className="text-sm text-info">
           Insights are observational patterns based on your logged data. They are
           not medical diagnoses. Please consult a healthcare provider for medical
           advice.
@@ -127,7 +127,7 @@ export function InsightsPanel() {
       {/* Threshold not met */}
       {!thresholdMet && (
         <div className="text-center py-8">
-          <p className="text-gray-600 text-lg">
+          <p className="text-muted text-lg">
             {daysRemaining} more days of logging needed before pattern analysis
             can begin.
           </p>
@@ -137,8 +137,8 @@ export function InsightsPanel() {
       {/* Threshold met but no insights */}
       {thresholdMet && insights.length === 0 && (
         <div className="text-center py-8">
-          <p className="text-gray-500 text-lg">No patterns detected yet.</p>
-          <p className="text-gray-400 text-sm mt-1">
+          <p className="text-muted text-lg">No patterns detected yet.</p>
+          <p className="text-faint text-sm mt-1">
             Keep logging entries and we&apos;ll analyze your data for
             correlations.
           </p>
@@ -151,7 +151,7 @@ export function InsightsPanel() {
           {insights.map((insight) => (
             <li
               key={insight.insightId}
-              className="rounded-lg border border-gray-200 bg-white p-4 shadow-sm"
+              className="rounded-2xl border border-border bg-surface p-4 shadow-card"
             >
               <div className="flex flex-col gap-3">
                 {/* Confidence score */}
@@ -161,9 +161,9 @@ export function InsightsPanel() {
                   >
                     Confidence: {insight.confidenceScore.toFixed(2)}
                   </span>
-                  <div className="flex-1 h-2 bg-gray-200 rounded-full overflow-hidden">
+                  <div className="flex-1 h-2 bg-surface-3 rounded-full overflow-hidden">
                     <div
-                      className="h-full bg-indigo-500 rounded-full"
+                      className="h-full bg-accent rounded-full"
                       style={{ width: getConfidenceWidth(insight.confidenceScore) }}
                       role="progressbar"
                       aria-valuenow={insight.confidenceScore}
@@ -175,17 +175,17 @@ export function InsightsPanel() {
                 </div>
 
                 {/* Summary */}
-                <p className="text-sm text-gray-900">{insight.summary}</p>
+                <p className="text-sm text-fg">{insight.summary}</p>
 
                 {/* Details row */}
                 <div className="flex flex-wrap gap-2 text-xs">
-                  <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-gray-700">
+                  <span className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-muted">
                     Trigger: {insight.trigger.identifier} ({insight.trigger.entryType})
                   </span>
-                  <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-gray-700">
+                  <span className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-muted">
                     Symptom: {insight.correlatedSymptom}
                   </span>
-                  <span className="inline-flex items-center rounded-md bg-gray-100 px-2 py-1 text-gray-700">
+                  <span className="inline-flex items-center rounded-md bg-surface-2 px-2 py-1 text-muted">
                     Avg delay: {insight.averageDelay}
                   </span>
                 </div>
@@ -194,7 +194,7 @@ export function InsightsPanel() {
                 <div className="flex items-center gap-2">
                   <a
                     href="/timeline"
-                    className="inline-flex items-center text-xs text-indigo-600 hover:text-indigo-500 font-medium"
+                    className="inline-flex items-center text-xs text-accent-text hover:brightness-110 font-medium"
                   >
                     {insight.supportingEntryIds.length} supporting{" "}
                     {insight.supportingEntryIds.length === 1 ? "entry" : "entries"}
@@ -204,11 +204,11 @@ export function InsightsPanel() {
                 {/* Deleted entries warning */}
                 {insight.hasDeletedEntries && (
                   <div
-                    className="flex items-center gap-1 text-xs text-amber-700 bg-amber-50 rounded-md px-2 py-1"
+                    className="flex items-center gap-1 text-xs text-warning bg-warning/10 rounded-md px-2 py-1"
                     role="alert"
                   >
                     <svg
-                      className="h-4 w-4 text-amber-500"
+                      className="h-4 w-4 text-warning"
                       fill="currentColor"
                       viewBox="0 0 20 20"
                       aria-hidden="true"

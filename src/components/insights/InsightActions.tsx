@@ -62,14 +62,14 @@ export function InsightActions({
       <div className="flex items-center gap-2">
         {status === "confirmed" ? (
           <>
-            <span className="inline-flex items-center rounded-full bg-green-100 px-2.5 py-0.5 text-xs font-medium text-green-800">
+            <span className="inline-flex items-center rounded-full bg-success/15 px-2.5 py-0.5 text-xs font-medium text-success">
               Confirmed ✓
             </span>
             <button
               type="button"
               onClick={handleDismiss}
               disabled={isLoading !== null}
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary px-3 py-1.5"
               aria-label="Dismiss insight"
             >
               {isLoading === "dismiss" ? "Dismissing..." : "Dismiss"}
@@ -81,7 +81,7 @@ export function InsightActions({
               type="button"
               onClick={handleDismiss}
               disabled={isLoading !== null}
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-gray-600 border border-gray-300 hover:bg-gray-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-secondary px-3 py-1.5"
               aria-label="Dismiss insight"
             >
               {isLoading === "dismiss" ? "Dismissing..." : "Dismiss"}
@@ -90,7 +90,7 @@ export function InsightActions({
               type="button"
               onClick={handleConfirm}
               disabled={isLoading !== null}
-              className="rounded-md px-3 py-1.5 text-sm font-medium text-white bg-indigo-600 hover:bg-indigo-700 focus:outline-none focus:ring-2 focus:ring-indigo-500 disabled:opacity-50 disabled:cursor-not-allowed"
+              className="btn-primary px-3 py-1.5"
               aria-label="Confirm insight"
             >
               {isLoading === "confirm" ? "Confirming..." : "Confirm"}
@@ -99,7 +99,7 @@ export function InsightActions({
         )}
       </div>
       {error && (
-        <p className="text-xs text-red-600" role="alert">
+        <p className="text-xs text-danger" role="alert">
           {error}
         </p>
       )}

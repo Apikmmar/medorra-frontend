@@ -94,7 +94,7 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
     <div className="space-y-4">
       {/* Entry Type Filter */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="label mb-2">
           Entry Type
         </label>
         <div className="flex flex-wrap gap-2">
@@ -103,8 +103,8 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
             onClick={() => handleTypeSelect(undefined)}
             className={`px-3 py-1.5 text-sm font-medium rounded-md border transition-colors ${
               !selectedType
-                ? "bg-indigo-600 text-white border-indigo-600"
-                : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                ? "bg-accent text-accent-fg border-accent"
+                : "bg-surface-2 text-muted border-border hover:bg-surface-3"
             }`}
             aria-pressed={!selectedType}
           >
@@ -117,8 +117,8 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
               onClick={() => handleTypeSelect(type)}
               className={`px-3 py-1.5 text-sm font-medium rounded-md border capitalize transition-colors ${
                 selectedType === type
-                  ? "bg-indigo-600 text-white border-indigo-600"
-                  : "bg-white text-gray-700 border-gray-300 hover:bg-gray-50"
+                  ? "bg-accent text-accent-fg border-accent"
+                  : "bg-surface-2 text-muted border-border hover:bg-surface-3"
               }`}
               aria-pressed={selectedType === type}
             >
@@ -130,7 +130,7 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
 
       {/* Date Range Filter */}
       <div>
-        <label className="block text-sm font-medium text-gray-700 mb-2">
+        <label className="label mb-2">
           Date Range
         </label>
         <div className="flex flex-col sm:flex-row gap-2 items-start sm:items-center">
@@ -143,17 +143,13 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
               type="date"
               value={startDate}
               onChange={(e) => handleStartDateChange(e.target.value)}
-              className={`block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                dateError
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:border-indigo-500"
-              }`}
+              className={`input ${dateError ? "input-error" : ""}`}
               aria-label="Start date"
               aria-invalid={!!dateError}
               aria-describedby={dateError ? "date-range-error" : undefined}
             />
           </div>
-          <span className="text-gray-500 text-sm">to</span>
+          <span className="text-muted text-sm">to</span>
           <div className="flex-1 w-full">
             <label htmlFor="filter-end-date" className="sr-only">
               End date
@@ -163,11 +159,7 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
               type="date"
               value={endDate}
               onChange={(e) => handleEndDateChange(e.target.value)}
-              className={`block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-indigo-500 ${
-                dateError
-                  ? "border-red-300 focus:border-red-500 focus:ring-red-500"
-                  : "border-gray-300 focus:border-indigo-500"
-              }`}
+              className={`input ${dateError ? "input-error" : ""}`}
               aria-label="End date"
               aria-invalid={!!dateError}
               aria-describedby={dateError ? "date-range-error" : undefined}
@@ -177,18 +169,14 @@ export function EntryFilters({ onFilterChange }: EntryFiltersProps) {
             <button
               type="button"
               onClick={handleClearDates}
-              className="text-sm text-gray-500 hover:text-gray-700 underline whitespace-nowrap"
+              className="text-sm text-muted hover:text-fg underline whitespace-nowrap"
             >
               Clear dates
             </button>
           )}
         </div>
         {dateError && (
-          <p
-            id="date-range-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="date-range-error" className="form-error" role="alert">
             {dateError}
           </p>
         )}

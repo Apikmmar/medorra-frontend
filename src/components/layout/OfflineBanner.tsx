@@ -33,10 +33,10 @@ export function OfflineBanner() {
         <div
           role="alert"
           aria-live="assertive"
-          className="flex flex-col gap-1 bg-orange-50 border-b border-orange-200 px-4 py-2 text-sm text-orange-800"
+          className="flex flex-col gap-1 bg-warning/10 border-b border-warning/20 px-4 py-2 text-sm text-warning"
         >
           <div className="flex items-center gap-2">
-            <ConflictIcon className="h-4 w-4 flex-shrink-0 text-orange-500" />
+            <ConflictIcon className="h-4 w-4 flex-shrink-0 text-warning" />
             <span>
               {conflicts.length} sync{" "}
               {conflicts.length === 1 ? "conflict" : "conflicts"} detected.
@@ -50,7 +50,7 @@ export function OfflineBanner() {
                 <button
                   type="button"
                   onClick={() => dismissConflict(conflict.id)}
-                  className="text-orange-600 hover:text-orange-800 underline text-xs"
+                  className="text-warning/80 hover:text-warning underline text-xs"
                   aria-label={`Dismiss conflict for ${conflict.entryType} entry`}
                 >
                   Dismiss
@@ -94,9 +94,9 @@ function StatusBanner({
       <div
         role="alert"
         aria-live="assertive"
-        className="flex items-center gap-2 bg-red-50 border-b border-red-200 px-4 py-2 text-sm text-red-800"
+        className="flex items-center gap-2 bg-danger/10 border-b border-danger/20 px-4 py-2 text-sm text-danger"
       >
-        <WarningIcon className="h-4 w-4 flex-shrink-0 text-red-500" />
+        <WarningIcon className="h-4 w-4 flex-shrink-0 text-danger" />
         <span>
           Queue full ({pendingCount} entries). New entries cannot be saved until
           connectivity is restored and pending entries sync.
@@ -111,9 +111,9 @@ function StatusBanner({
       <div
         role="status"
         aria-live="polite"
-        className="flex items-center gap-2 bg-amber-50 border-b border-amber-200 px-4 py-2 text-sm text-amber-800"
+        className="flex items-center gap-2 bg-warning/10 border-b border-warning/20 px-4 py-2 text-sm text-warning"
       >
-        <OfflineIcon className="h-4 w-4 flex-shrink-0 text-amber-500" />
+        <OfflineIcon className="h-4 w-4 flex-shrink-0 text-warning" />
         <span>
           You&apos;re offline.{" "}
           {pendingCount > 0
@@ -130,9 +130,9 @@ function StatusBanner({
       <div
         role="status"
         aria-live="polite"
-        className="flex items-center gap-2 bg-blue-50 border-b border-blue-200 px-4 py-2 text-sm text-blue-800"
+        className="flex items-center gap-2 bg-info/10 border-b border-info/20 px-4 py-2 text-sm text-info"
       >
-        <SyncIcon className="h-4 w-4 flex-shrink-0 text-blue-500 animate-spin" />
+        <SyncIcon className="h-4 w-4 flex-shrink-0 text-info animate-spin" />
         <span>
           Syncing {pendingCount} {pendingCount === 1 ? "entry" : "entries"}...
         </span>

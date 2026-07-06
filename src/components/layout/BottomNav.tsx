@@ -23,7 +23,7 @@ export function BottomNav() {
 
   return (
     <nav
-      className="fixed bottom-0 left-0 right-0 z-50 border-t border-gray-200 bg-white tablet:hidden"
+      className="fixed bottom-0 left-0 right-0 z-50 border-t border-border bg-surface/95 backdrop-blur tablet:hidden"
       aria-label="Mobile navigation"
       role="navigation"
     >
@@ -41,7 +41,7 @@ export function BottomNav() {
                 aria-current={isActive ? "page" : undefined}
                 aria-label={item.label}
                 className={`flex flex-col items-center gap-0.5 px-3 py-2 text-xs font-medium transition-colors ${
-                  isActive ? "text-brand-700" : "text-gray-500"
+                  isActive ? "text-accent-text" : "text-muted"
                 }`}
               >
                 <span className="h-5 w-5" aria-hidden="true">

@@ -125,7 +125,7 @@ function EntryRow({ entry }: EntryRowProps) {
   const detail = getEntryDetail(entry);
 
   return (
-    <li className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-gray-50/70 sm:px-5">
+    <li className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-surface-2/60 sm:px-5">
       <span
         className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${visual.avatar}`}
         aria-hidden="true"
@@ -135,7 +135,7 @@ function EntryRow({ entry }: EntryRowProps) {
 
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
-          <p className="truncate text-sm font-semibold text-gray-900">
+          <p className="truncate text-sm font-semibold text-fg">
             {getEntryTitle(entry)}
           </p>
           <span
@@ -145,16 +145,16 @@ function EntryRow({ entry }: EntryRowProps) {
           </span>
         </div>
         {detail && (
-          <p className="mt-0.5 truncate text-sm text-gray-500">{detail}</p>
+          <p className="mt-0.5 truncate text-sm text-muted">{detail}</p>
         )}
         {entry.notes && (
-          <p className="mt-1 line-clamp-2 text-xs text-gray-400">{entry.notes}</p>
+          <p className="mt-1 line-clamp-2 text-xs text-faint">{entry.notes}</p>
         )}
       </div>
 
       <time
         dateTime={entry.createdAt}
-        className="flex-shrink-0 pt-0.5 text-xs tabular-nums text-gray-400"
+        className="flex-shrink-0 pt-0.5 text-xs tabular-nums text-faint"
       >
         {formatTime(entry.createdAt)}
       </time>
@@ -277,10 +277,10 @@ export function TimelineView() {
     <div className="space-y-4">
       {/* Toolbar: result summary + filter toggle */}
       <div className="flex items-center justify-between gap-3">
-        <p className="text-sm text-gray-500">
+        <p className="text-sm text-muted">
           {totalCount > 0 ? (
             <>
-              <span className="font-medium text-gray-900">
+              <span className="font-medium text-fg">
                 {rangeStart}–{rangeEnd}
               </span>{" "}
               of {totalCount}
@@ -293,7 +293,7 @@ export function TimelineView() {
         <button
           type="button"
           onClick={() => setShowFilters((v) => !v)}
-          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface-3"
           aria-expanded={showFilters}
         >
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
@@ -305,7 +305,7 @@ export function TimelineView() {
           </svg>
           Filters
           {activeFilters > 0 && (
-            <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-600 px-1 text-[11px] font-semibold text-white">
+            <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-accent-fg">
               {activeFilters}
             </span>
           )}
@@ -326,13 +326,13 @@ export function TimelineView() {
         </Card>
       ) : error ? (
         <div
-          className="rounded-2xl border border-red-200 bg-red-50 p-4"
+          className="rounded-2xl border border-danger/20 bg-danger/10 p-4"
           role="alert"
         >
-          <p className="text-sm text-red-700">{error}</p>
+          <p className="text-sm text-danger">{error}</p>
           <button
             onClick={() => loadPage(filters, pageIndex, cursorStack)}
-            className="mt-2 text-sm font-medium text-red-600 underline hover:text-red-500"
+            className="mt-2 text-sm font-medium text-danger underline hover:brightness-110"
           >
             Try again
           </button>
@@ -359,10 +359,7 @@ export function TimelineView() {
             }
             action={
               activeFilters === 0 ? (
-                <Link
-                  href="/entries/new"
-                  className="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-500"
-                >
+                <Link href="/entries/new" className="btn-primary">
                   Log your first entry
                 </Link>
               ) : undefined
@@ -373,11 +370,11 @@ export function TimelineView() {
         <div className="space-y-5 animate-fade-in">
           {groups.map((group) => (
             <section key={group.key}>
-              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-faint">
                 {group.label}
               </h2>
               <Card className="overflow-hidden">
-                <ul className="divide-y divide-gray-100" aria-label="Timeline entries">
+                <ul className="divide-y divide-border" aria-label="Timeline entries">
                   {group.items.map((entry) => (
                     <EntryRow key={entry.entryId} entry={entry} />
                   ))}

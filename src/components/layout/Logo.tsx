@@ -22,7 +22,7 @@ export function Logo({ withWordmark = true, className = "" }: LogoProps) {
         </svg>
       </span>
       {withWordmark && (
-        <span className="text-lg font-bold tracking-tight text-gray-900">
+        <span className="text-lg font-bold tracking-tight text-fg">
           Medorra
         </span>
       )}

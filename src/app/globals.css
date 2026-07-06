@@ -2,7 +2,67 @@
 @tailwind components;
 @tailwind utilities;
 
+/*
+ * Design tokens. All colors are stored as space-separated RGB channels so they
+ * can be consumed via `rgb(var(--token) / <alpha-value>)` in tailwind.config.ts,
+ * which keeps opacity utilities (e.g. bg-accent/10) working.
+ *
+ * Dark is the default (and current) theme. A light theme is scaffolded under
+ * [data-theme="light"] so a toggle can be added later without touching markup.
+ */
 @layer base {
+  :root {
+    /* Surfaces */
+    --bg: 8 11 15; /* app background */
+    --surface: 17 22 29; /* cards, panels, bars */
+    --surface-2: 24 31 40; /* inputs, nested blocks, subtle hover */
+    --surface-3: 32 41 52; /* hover on surface-2 */
+
+    /* Lines */
+    --border: 34 43 54;
+    --border-strong: 51 63 77;
+
+    /* Text */
+    --fg: 230 237 243; /* primary text */
+    --muted: 154 168 182; /* secondary text */
+    --faint: 107 122 137; /* tertiary text, placeholders */
+
+    /* Accent (calm teal) */
+    --accent: 20 184 166; /* teal-500 — solid fills */
+    --accent-hover: 45 212 191; /* teal-400 — hover on fills */
+    --accent-fg: 4 20 18; /* text/icon on an accent fill */
+    --accent-text: 94 234 212; /* teal-300 — links/icons on dark */
+
+    /* Status */
+    --success: 52 211 153;
+    --danger: 248 113 113;
+    --warning: 251 191 36;
+    --info: 96 165 250;
+
+    /* Native controls (date pickers, sliders, checkboxes) */
+    color-scheme: dark;
+    accent-color: rgb(20 184 166);
+  }
+
+  /* Scaffold for a future light theme — safe to expand later. */
+  :root[data-theme="light"] {
+    --bg: 247 249 251;
+    --surface: 255 255 255;
+    --surface-2: 244 247 250;
+    --surface-3: 236 240 245;
+    --border: 226 232 240;
+    --border-strong: 203 213 225;
+    --fg: 15 23 42;
+    --muted: 71 85 105;
+    --faint: 148 163 184;
+    --accent: 13 148 136;
+    --accent-hover: 15 118 110;
+    --accent-fg: 255 255 255;
+    --accent-text: 13 148 136;
+    color-scheme: light;
+    accent-color: rgb(13 148 136);
+  }
+
   html {
     min-width: 320px;
     scroll-behavior: smooth;
@@ -10,17 +70,57 @@
   }
 
   body {
-    @apply bg-gray-50 text-gray-900 antialiased;
+    @apply bg-bg text-fg antialiased;
   }
 
-  /* Accent color for text/date input selection */
   ::selection {
-    @apply bg-brand-100 text-brand-900;
+    @apply bg-accent/30 text-fg;
   }
 
-  /* Consistent, subtle focus ring across interactive elements */
+  /* Consistent focus ring across interactive elements */
   :focus-visible {
-    @apply outline-none ring-2 ring-brand-500 ring-offset-2 ring-offset-gray-50;
+    @apply outline-none ring-2 ring-accent/70 ring-offset-2 ring-offset-bg;
+  }
+}
+
+@layer components {
+  /* Form primitives — unify the two form idioms across the app */
+  .label {
+    @apply block text-sm font-medium text-muted;
+  }
+
+  .input {
+    @apply block w-full rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm text-fg placeholder-faint shadow-sm transition-colors;
+    @apply focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40;
+  }
+
+  .input-error {
+    @apply border-danger focus:border-danger focus:ring-danger/40;
+  }
+
+  .form-hint {
+    @apply mt-1 text-xs text-faint;
+  }
+
+  .form-error {
+    @apply mt-1 text-sm text-danger;
+  }
+
+  /* Buttons */
+  .btn-primary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-fg shadow-sm transition-colors hover:bg-accent-hover disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-secondary {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg border border-border bg-surface-2 px-4 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-50;
+  }
+
+  .btn-ghost {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg px-3 py-2 text-sm font-medium text-muted transition-colors hover:bg-surface-2 hover:text-fg;
+  }
+
+  .btn-danger {
+    @apply inline-flex items-center justify-center gap-1.5 rounded-lg bg-danger px-4 py-2 text-sm font-semibold text-white transition-colors hover:brightness-110 disabled:cursor-not-allowed disabled:opacity-50;
   }
 }
 
@@ -28,14 +128,14 @@
   /* Slim, unobtrusive scrollbar */
   .scrollbar-thin {
     scrollbar-width: thin;
-    scrollbar-color: rgb(203 213 225) transparent;
+    scrollbar-color: rgb(var(--border-strong)) transparent;
   }
   .scrollbar-thin::-webkit-scrollbar {
     width: 8px;
     height: 8px;
   }
   .scrollbar-thin::-webkit-scrollbar-thumb {
-    background-color: rgb(203 213 225);
+    background-color: rgb(var(--border-strong));
     border-radius: 9999px;
   }
   .scrollbar-thin::-webkit-scrollbar-track {

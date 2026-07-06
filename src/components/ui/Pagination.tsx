@@ -37,7 +37,7 @@ function ChevronRight() {
 }
 
 const btnBase =
-  "inline-flex items-center gap-1.5 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50 disabled:cursor-not-allowed disabled:opacity-40";
+  "inline-flex items-center gap-1.5 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface-3 disabled:cursor-not-allowed disabled:opacity-40";
 
 export function Pagination({
   page,
@@ -63,8 +63,8 @@ export function Pagination({
         <span className="hidden sm:inline">Previous</span>
       </button>
 
-      <span className="text-sm text-gray-500" aria-live="polite">
-        Page <span className="font-semibold text-gray-900">{page}</span> of{" "}
+      <span className="text-sm text-muted" aria-live="polite">
+        Page <span className="font-semibold text-fg">{page}</span> of{" "}
         {totalPages}
       </span>
 

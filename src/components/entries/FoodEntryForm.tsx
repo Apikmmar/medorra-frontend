@@ -250,24 +250,22 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
   return (
     <form onSubmit={handleSubmit} className="space-y-6" aria-label="Food entry form">
       {submitSuccess && (
-        <div className="rounded-md bg-green-50 p-4 text-green-800" role="status">
+        <div className="rounded-lg bg-success/10 p-4 text-success" role="status">
           Food entry saved successfully!
         </div>
       )}
 
       {/* Meal Type */}
       <div>
-        <label htmlFor="mealType" className="block text-sm font-medium text-gray-700">
-          Meal Type <span className="text-red-500">*</span>
+        <label htmlFor="mealType" className="label">
+          Meal Type <span className="text-danger">*</span>
         </label>
         <select
           id="mealType"
           value={formData.mealType}
           onChange={(e) => handleMealTypeChange(e.target.value)}
           onBlur={(e) => handleMealTypeChange(e.target.value)}
-          className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.mealType ? "border-red-500" : "border-gray-300"
-          }`}
+          className={`input mt-1 ${errors.mealType ? "input-error" : ""}`}
           aria-invalid={!!errors.mealType}
           aria-describedby={errors.mealType ? "mealType-error" : undefined}
         >
@@ -279,7 +277,7 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
           ))}
         </select>
         {errors.mealType && (
-          <p id="mealType-error" className="mt-1 text-sm text-red-600" role="alert">
+          <p id="mealType-error" className="form-error" role="alert">
             {errors.mealType}
           </p>
         )}
@@ -287,7 +285,7 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
 
       {/* Timestamp (optional) */}
       <div>
-        <label htmlFor="timestamp" className="block text-sm font-medium text-gray-700">
+        <label htmlFor="timestamp" className="label">
           Timestamp
         </label>
         <input
@@ -295,21 +293,21 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
           id="timestamp"
           value={formData.timestamp || ""}
           onChange={(e) => handleTimestampChange(e.target.value)}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input mt-1"
         />
       </div>
 
       {/* Food Items */}
       <div className="space-y-4">
         <div className="flex items-center justify-between">
-          <h3 className="text-sm font-medium text-gray-700">
-            Food Items <span className="text-red-500">*</span>
+          <h3 className="text-sm font-medium text-muted">
+            Food Items <span className="text-danger">*</span>
           </h3>
           <button
             type="button"
             onClick={addFoodItem}
             disabled={formData.items.length >= 20}
-            className="rounded-md bg-blue-600 px-3 py-1 text-sm text-white hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+            className="btn-secondary px-3 py-1.5"
             aria-label="Add food item"
           >
             + Add Item
@@ -317,14 +315,14 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
         </div>
 
         {formData.items.map((item, index) => (
-          <div key={index} className="rounded-lg border border-gray-200 p-4 space-y-3">
+          <div key={index} className="rounded-lg border border-border bg-surface-2 p-4 space-y-3">
             <div className="flex items-center justify-between">
-              <span className="text-sm font-medium text-gray-600">Item {index + 1}</span>
+              <span className="text-sm font-medium text-muted">Item {index + 1}</span>
               {formData.items.length > 1 && (
                 <button
                   type="button"
                   onClick={() => removeFoodItem(index)}
-                  className="text-sm text-red-600 hover:text-red-800"
+                  className="text-sm text-danger hover:brightness-110"
                   aria-label={`Remove food item ${index + 1}`}
                 >
                   Remove
@@ -334,11 +332,8 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
 
             {/* Description */}
             <div>
-              <label
-                htmlFor={`description-${index}`}
-                className="block text-sm font-medium text-gray-700"
-              >
-                Description <span className="text-red-500">*</span>
+              <label htmlFor={`description-${index}`} className="label">
+                Description <span className="text-danger">*</span>
               </label>
               <input
                 type="text"
@@ -347,8 +342,8 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
                 onChange={(e) => handleDescriptionChange(index, e.target.value)}
                 onBlur={(e) => handleDescriptionChange(index, e.target.value)}
                 maxLength={500}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.items?.[index]?.description ? "border-red-500" : "border-gray-300"
+                className={`input mt-1 ${
+                  errors.items?.[index]?.description ? "input-error" : ""
                 }`}
                 aria-invalid={!!errors.items?.[index]?.description}
                 aria-describedby={
@@ -360,7 +355,7 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
                 {errors.items?.[index]?.description ? (
                   <p
                     id={`description-${index}-error`}
-                    className="text-sm text-red-600"
+                    className="text-sm text-danger"
                     role="alert"
                   >
                     {errors.items[index].description}
@@ -368,29 +363,26 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
                 ) : (
                   <span />
                 )}
-                <span className="text-xs text-gray-400">{item.description.length}/500</span>
+                <span className="text-xs text-faint">{item.description.length}/500</span>
               </div>
             </div>
 
             {/* Tags */}
             <div>
-              <label
-                htmlFor={`tags-${index}`}
-                className="block text-sm font-medium text-gray-700"
-              >
+              <label htmlFor={`tags-${index}`} className="label">
                 Tags (max 10, press Enter or comma to add)
               </label>
               <div className="mt-1 flex flex-wrap gap-1">
                 {item.tags.map((tag, tagIdx) => (
                   <span
                     key={tagIdx}
-                    className="inline-flex items-center gap-1 rounded-full bg-blue-100 px-2 py-0.5 text-sm text-blue-800"
+                    className="inline-flex items-center gap-1 rounded-full bg-accent/15 px-2 py-0.5 text-sm text-accent-text"
                   >
                     {tag}
                     <button
                       type="button"
                       onClick={() => removeTag(index, tagIdx)}
-                      className="text-blue-600 hover:text-blue-900"
+                      className="text-accent-text hover:brightness-110"
                       aria-label={`Remove tag ${tag}`}
                     >
                       ×
@@ -404,15 +396,15 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
                 value={tagInputs[index] || ""}
                 onChange={(e) => handleTagInputChange(index, e.target.value)}
                 onKeyDown={(e) => handleTagInputKeyDown(index, e)}
-                className={`mt-1 block w-full rounded-md border px-3 py-2 shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-                  errors.items?.[index]?.tags ? "border-red-500" : "border-gray-300"
+                className={`input mt-1 ${
+                  errors.items?.[index]?.tags ? "input-error" : ""
                 }`}
                 aria-invalid={!!errors.items?.[index]?.tags}
                 aria-describedby={errors.items?.[index]?.tags ? `tags-${index}-error` : undefined}
                 placeholder="e.g., gluten, dairy, high-histamine"
               />
               {errors.items?.[index]?.tags && (
-                <p id={`tags-${index}-error`} className="mt-1 text-sm text-red-600" role="alert">
+                <p id={`tags-${index}-error`} className="form-error" role="alert">
                   {errors.items[index].tags}
                 </p>
               )}
@@ -425,7 +417,7 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-white font-medium hover:bg-blue-700 disabled:cursor-not-allowed disabled:opacity-50"
+        className="btn-primary w-full"
       >
         {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Food Entry"}
       </button>

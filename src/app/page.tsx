@@ -25,8 +25,8 @@ export default function DashboardPage() {
   return (
     <div className="mx-auto max-w-3xl space-y-8">
       {/* Hero */}
-      <section className="animate-fade-in overflow-hidden rounded-2xl bg-gradient-to-br from-brand-600 to-brand-800 p-6 text-white shadow-card sm:p-8">
-        <h1 className="text-2xl font-bold tracking-tight sm:text-3xl">
+      <section className="animate-fade-in overflow-hidden rounded-2xl border border-accent/20 bg-gradient-to-br from-brand-800 to-brand-900 p-6 shadow-card sm:p-8">
+        <h1 className="text-2xl font-bold tracking-tight text-white sm:text-3xl">
           Welcome back
         </h1>
         <p className="mt-2 max-w-lg text-sm text-brand-100">
@@ -35,7 +35,7 @@ export default function DashboardPage() {
         </p>
         <Link
           href="/entries/new"
-          className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-white px-4 py-2 text-sm font-semibold text-brand-700 shadow-sm transition-colors hover:bg-brand-50"
+          className="mt-5 inline-flex items-center gap-1.5 rounded-lg bg-accent px-4 py-2 text-sm font-semibold text-accent-fg shadow-sm transition-colors hover:bg-accent-hover"
         >
           <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
             <path d="M10 5a.75.75 0 01.75.75v3.5h3.5a.75.75 0 010 1.5h-3.5v3.5a.75.75 0 01-1.5 0v-3.5h-3.5a.75.75 0 010-1.5h3.5v-3.5A.75.75 0 0110 5z" />
@@ -46,7 +46,7 @@ export default function DashboardPage() {
 
       {/* Quick log */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-faint">
           Quick log
         </h2>
         <div className="grid grid-cols-2 gap-3 sm:grid-cols-4">
@@ -66,10 +66,10 @@ export default function DashboardPage() {
                     {v.icon}
                   </span>
                   <div>
-                    <p className="text-sm font-semibold text-gray-900">
+                    <p className="text-sm font-semibold text-fg">
                       {v.label}
                     </p>
-                    <p className="mt-0.5 text-xs text-gray-500">{description}</p>
+                    <p className="mt-0.5 text-xs text-muted">{description}</p>
                   </div>
                 </Card>
               </Link>
@@ -80,7 +80,7 @@ export default function DashboardPage() {
 
       {/* Shortcuts */}
       <section>
-        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-gray-400">
+        <h2 className="mb-3 text-sm font-semibold uppercase tracking-wide text-faint">
           Explore
         </h2>
         <div className="grid gap-3 sm:grid-cols-2">
@@ -88,13 +88,13 @@ export default function DashboardPage() {
             <Link key={s.href} href={s.href} className="group">
               <Card interactive className="flex items-center justify-between p-5">
                 <div>
-                  <p className="text-base font-semibold text-gray-900">
+                  <p className="text-base font-semibold text-fg">
                     {s.title}
                   </p>
-                  <p className="mt-1 text-sm text-gray-500">{s.description}</p>
+                  <p className="mt-1 text-sm text-muted">{s.description}</p>
                 </div>
                 <svg
-                  className="h-5 w-5 flex-shrink-0 text-gray-300 transition-colors group-hover:text-brand-500"
+                  className="h-5 w-5 flex-shrink-0 text-faint transition-colors group-hover:text-accent-text"
                   viewBox="0 0 20 20"
                   fill="currentColor"
                   aria-hidden="true"

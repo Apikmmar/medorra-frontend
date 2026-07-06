@@ -232,13 +232,13 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
   return (
     <form onSubmit={handleSubmit} className="space-y-6" noValidate>
-      <h2 className="text-xl font-semibold text-gray-900">
+      <h2 className="text-xl font-semibold text-fg">
         Log Medication
       </h2>
 
       {submitSuccess && (
         <div
-          className="rounded-md bg-green-50 p-4 text-sm text-green-700"
+          className="rounded-lg bg-success/10 p-4 text-sm text-success"
           role="alert"
         >
           Medication entry saved successfully.
@@ -247,7 +247,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
       {submitError && (
         <div
-          className="rounded-md bg-red-50 p-4 text-sm text-red-700"
+          className="rounded-lg bg-danger/10 p-4 text-sm text-danger"
           role="alert"
         >
           {submitError}
@@ -256,11 +256,8 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
       {/* Medication Name */}
       <div>
-        <label
-          htmlFor="medicationName"
-          className="block text-sm font-medium text-gray-700"
-        >
-          Medication Name <span className="text-red-500">*</span>
+        <label htmlFor="medicationName" className="label">
+          Medication Name <span className="text-danger">*</span>
         </label>
         <input
           type="text"
@@ -270,10 +267,8 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           onChange={handleChange}
           onBlur={handleBlur}
           maxLength={100}
-          className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.medicationName && touched.medicationName
-              ? "border-red-500"
-              : "border-gray-300"
+          className={`input mt-1 ${
+            errors.medicationName && touched.medicationName ? "input-error" : ""
           }`}
           placeholder="e.g., Ibuprofen, Metformin"
           aria-invalid={!!errors.medicationName && touched.medicationName}
@@ -282,11 +277,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           }
         />
         {errors.medicationName && touched.medicationName && (
-          <p
-            id="medicationName-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="medicationName-error" className="form-error" role="alert">
             {errors.medicationName}
           </p>
         )}
@@ -294,10 +285,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
       {/* Dosage Amount */}
       <div>
-        <label
-          htmlFor="dosageAmount"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="dosageAmount" className="label">
           Dosage Amount
         </label>
         <input
@@ -310,10 +298,8 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           min={0.01}
           max={99999}
           step="any"
-          className={`mt-1 block w-full rounded-md border px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-            errors.dosageAmount && touched.dosageAmount
-              ? "border-red-500"
-              : "border-gray-300"
+          className={`input mt-1 ${
+            errors.dosageAmount && touched.dosageAmount ? "input-error" : ""
           }`}
           placeholder="e.g., 500"
           aria-invalid={!!errors.dosageAmount && touched.dosageAmount}
@@ -322,11 +308,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           }
         />
         {errors.dosageAmount && touched.dosageAmount && (
-          <p
-            id="dosageAmount-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="dosageAmount-error" className="form-error" role="alert">
             {errors.dosageAmount}
           </p>
         )}
@@ -334,10 +316,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
       {/* Dosage Unit */}
       <div>
-        <label
-          htmlFor="dosageUnit"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="dosageUnit" className="label">
           Dosage Unit
         </label>
         <input
@@ -347,18 +326,18 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           value={formData.dosageUnit}
           onChange={handleChange}
           onBlur={handleBlur}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input mt-1"
           placeholder="e.g., mg, ml, tablets"
         />
       </div>
 
       {/* Schedule Type */}
       <fieldset>
-        <legend className="block text-sm font-medium text-gray-700">
-          Schedule Type <span className="text-red-500">*</span>
+        <legend className="label">
+          Schedule Type <span className="text-danger">*</span>
         </legend>
         <div className="mt-2 flex gap-6">
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
             <input
               type="radio"
               name="scheduleType"
@@ -366,11 +345,11 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
               checked={formData.scheduleType === "as-needed"}
               onChange={() => handleRadioChange("as-needed")}
               onBlur={handleBlur}
-              className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4"
             />
             As-needed
           </label>
-          <label className="flex items-center gap-2 text-sm text-gray-700 cursor-pointer">
+          <label className="flex items-center gap-2 text-sm text-muted cursor-pointer">
             <input
               type="radio"
               name="scheduleType"
@@ -378,17 +357,13 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
               checked={formData.scheduleType === "scheduled"}
               onChange={() => handleRadioChange("scheduled")}
               onBlur={handleBlur}
-              className="h-4 w-4 border-gray-300 text-blue-600 focus:ring-blue-500"
+              className="h-4 w-4"
             />
             Scheduled
           </label>
         </div>
         {errors.scheduleType && touched.scheduleType && (
-          <p
-            id="scheduleType-error"
-            className="mt-1 text-sm text-red-600"
-            role="alert"
-          >
+          <p id="scheduleType-error" className="form-error" role="alert">
             {errors.scheduleType}
           </p>
         )}
@@ -396,10 +371,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
 
       {/* Timestamp */}
       <div>
-        <label
-          htmlFor="timestamp"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="timestamp" className="label">
           Timestamp
         </label>
         <input
@@ -409,16 +381,13 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           value={formData.timestamp}
           onChange={handleChange}
           onBlur={handleBlur}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input mt-1"
         />
       </div>
 
       {/* Notes */}
       <div>
-        <label
-          htmlFor="notes"
-          className="block text-sm font-medium text-gray-700"
-        >
+        <label htmlFor="notes" className="label">
           Notes
         </label>
         <textarea
@@ -428,7 +397,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           onChange={handleChange}
           onBlur={handleBlur}
           rows={3}
-          className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-sm shadow-sm focus:outline-none focus:ring-2 focus:ring-blue-500"
+          className="input mt-1"
           placeholder="Additional notes about this medication..."
         />
       </div>
@@ -437,7 +406,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
       <button
         type="submit"
         disabled={isSubmitting}
-        className="w-full rounded-md bg-blue-600 px-4 py-2 text-sm font-medium text-white shadow-sm hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+        className="btn-primary w-full"
       >
         {isSubmitting ? "Saving..." : isEditMode ? "Update Entry" : "Save Medication Entry"}
       </button>

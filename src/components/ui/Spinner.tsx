@@ -11,9 +11,9 @@ export function Spinner({ className = "h-8 w-8", label }: SpinnerProps) {
       aria-label={label ?? "Loading"}
     >
       <span
-        className={`inline-block animate-spin rounded-full border-2 border-gray-200 border-t-brand-600 ${className}`}
+        className={`inline-block animate-spin rounded-full border-2 border-border border-t-accent ${className}`}
       />
-      {label && <span className="text-sm text-gray-500">{label}</span>}
+      {label && <span className="text-sm text-muted">{label}</span>}
     </div>
   );
 }

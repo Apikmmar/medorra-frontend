@@ -34,10 +34,10 @@ export function AppLayout({ children }: AppLayoutProps) {
           <OfflineBanner />
 
           {/* Top header bar for tablet with hamburger menu */}
-          <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-gray-200 bg-white/80 px-4 backdrop-blur tablet:flex desktop:hidden">
+          <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-border bg-surface/80 px-4 backdrop-blur tablet:flex desktop:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="rounded-lg p-2 text-muted hover:bg-surface-2 hover:text-fg"
               aria-label="Open navigation menu"
             >
               <span className="block h-5 w-5">
@@ -50,7 +50,7 @@ export function AppLayout({ children }: AppLayoutProps) {
           </header>
 
           {/* Mobile top bar */}
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-center border-b border-gray-200 bg-white/80 backdrop-blur tablet:hidden">
+          <header className="sticky top-0 z-20 flex h-14 items-center justify-center border-b border-border bg-surface/80 backdrop-blur tablet:hidden">
             <Logo />
           </header>
 

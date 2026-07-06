@@ -52,33 +52,33 @@ function ConfirmForm() {
   }
 
   return (
-    <div className="flex min-h-screen items-center justify-center bg-gray-50 px-4">
+    <div className="flex min-h-screen items-center justify-center bg-bg px-4">
       <div className="w-full max-w-md space-y-8">
         <div className="text-center">
-          <h1 className="text-3xl font-bold text-indigo-700">Medorra</h1>
-          <p className="mt-2 text-gray-600">Verify your email address</p>
+          <h1 className="text-3xl font-bold text-accent-text">Medorra</h1>
+          <p className="mt-2 text-muted">Verify your email address</p>
         </div>
 
-        <form onSubmit={handleSubmit} className="mt-8 space-y-6 rounded-lg bg-white p-8 shadow">
-          <p className="text-sm text-gray-600">
+        <form onSubmit={handleSubmit} className="mt-8 space-y-6 rounded-2xl border border-border bg-surface p-8 shadow-card">
+          <p className="text-sm text-muted">
             We sent a verification code to your email. Enter it below to confirm your account.
           </p>
 
           {error && (
-            <div className="rounded-md bg-red-50 p-3 text-sm text-red-700" role="alert">
+            <div className="rounded-lg bg-danger/10 p-3 text-sm text-danger" role="alert">
               {error}
             </div>
           )}
 
           {resendSuccess && (
-            <div className="rounded-md bg-green-50 p-3 text-sm text-green-700" role="status">
+            <div className="rounded-lg bg-success/10 p-3 text-sm text-success" role="status">
               Verification code resent. Check your email.
             </div>
           )}
 
           <div className="space-y-4">
             <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="email" className="label">
                 Email address
               </label>
               <input
@@ -87,13 +87,13 @@ function ConfirmForm() {
                 required
                 value={email}
                 onChange={(e) => setEmail(e.target.value)}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input mt-1"
                 placeholder="you@example.com"
               />
             </div>
 
             <div>
-              <label htmlFor="code" className="block text-sm font-medium text-gray-700">
+              <label htmlFor="code" className="label">
                 Verification code
               </label>
               <input
@@ -105,7 +105,7 @@ function ConfirmForm() {
                 maxLength={6}
                 value={code}
                 onChange={(e) => setCode(e.target.value.replace(/\D/g, ""))}
-                className="mt-1 block w-full rounded-md border border-gray-300 px-3 py-2 text-center text-2xl font-mono tracking-widest text-gray-900 placeholder-gray-400 focus:border-indigo-500 focus:outline-none focus:ring-1 focus:ring-indigo-500"
+                className="input mt-1 text-center text-2xl font-mono tracking-widest"
                 placeholder="000000"
               />
             </div>
@@ -114,7 +114,7 @@ function ConfirmForm() {
           <button
             type="submit"
             disabled={loading || code.length < 6}
-            className="w-full rounded-md bg-indigo-600 px-4 py-2 text-sm font-semibold text-white hover:bg-indigo-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            className="btn-primary w-full"
           >
             {loading ? "Verifying..." : "Verify account"}
           </button>
@@ -124,12 +124,12 @@ function ConfirmForm() {
               type="button"
               onClick={handleResend}
               disabled={resending}
-              className="font-medium text-indigo-600 hover:text-indigo-500 disabled:opacity-50"
+              className="font-medium text-accent-text hover:brightness-110 disabled:opacity-50"
             >
               {resending ? "Sending..." : "Resend code"}
             </button>
 
-            <Link href="/auth/login" className="font-medium text-gray-500 hover:text-gray-700">
+            <Link href="/auth/login" className="font-medium text-muted hover:text-fg">
               Back to sign in
             </Link>
           </div>
