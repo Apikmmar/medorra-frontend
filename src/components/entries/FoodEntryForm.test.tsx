@@ -114,7 +114,7 @@ describe("FoodEntryForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith("/entries", {
+      expect(apiClient.post).toHaveBeenCalledWith("/entries/food", {
         entryType: "food",
         mealType: "lunch",
         items: [{ description: "Grilled chicken salad", tags: [] }],

@@ -55,29 +55,45 @@ describe("TimelineView", () => {
     mockGet.mockReturnValue(new Promise(() => {})); // never resolves
     render(<TimelineView />);
 
-    expect(screen.getByRole("status", { name: /loading entries/i })).toBeInTheDocument();
+    expect(
+      screen.getByRole("status", { name: /loading/i })
+    ).toBeInTheDocument();
     expect(screen.getByText("Loading entries...")).toBeInTheDocument();
   });
 
-  it("displays entries in reverse chronological order", async () => {
+  it("fetches the first timeline page on initial load", async () => {
     mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByText("Headache — severity 7")).toBeInTheDocument();
+      expect(mockGet).toHaveBeenCalledWith("/entries/timeline?pageSize=15&page=1");
     });
-
-    expect(screen.getByText("Ibuprofen — 200mg")).toBeInTheDocument();
-    expect(screen.getByText("Breakfast")).toBeInTheDocument();
-    expect(screen.getByText("8h 0m — quality 8")).toBeInTheDocument();
   });
 
-  it("shows total entry count", async () => {
+  it("displays entries with titles and details", async () => {
     mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByText("Showing 4 of 4 entries")).toBeInTheDocument();
+      expect(screen.getByText("Headache")).toBeInTheDocument();
+    });
+
+    expect(screen.getByText("Severity 7/10")).toBeInTheDocument();
+    expect(screen.getByText("Ibuprofen")).toBeInTheDocument();
+    expect(screen.getByText("200mg")).toBeInTheDocument();
+    expect(screen.getByText("Breakfast")).toBeInTheDocument();
+    expect(screen.getByText("Oatmeal with berries")).toBeInTheDocument();
+    expect(screen.getByText("8h 0m sleep")).toBeInTheDocument();
+    expect(screen.getByText("Quality 8/10")).toBeInTheDocument();
+  });
+
+  it("shows the visible range and total count", async () => {
+    mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
+    render(<TimelineView />);
+
+    await waitFor(() => {
+      expect(screen.getByText(/1.4/)).toBeInTheDocument();
+      expect(screen.getByText(/of 4/)).toBeInTheDocument();
     });
   });
 
@@ -94,47 +110,52 @@ describe("TimelineView", () => {
     expect(screen.getByText("Sleep")).toBeInTheDocument();
   });
 
-  it("shows formatted timestamps", async () => {
+  it("renders a time element per entry", async () => {
     mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
     render(<TimelineView />);
 
     await waitFor(() => {
-      const timeElements = screen.getAllByRole("listitem");
-      expect(timeElements.length).toBe(4);
+      const items = screen.getAllByRole("listitem");
+      expect(items.length).toBe(4);
     });
 
-    // Each entry should have a time element
     const timeElements = document.querySelectorAll("time");
     expect(timeElements.length).toBe(4);
     expect(timeElements[0].getAttribute("datetime")).toBe("2024-03-15T10:30:00Z");
   });
 
-  it("shows 'Load More' button when hasMore is true", async () => {
-    const responseWithMore: EntriesResponse = {
+  it("shows pagination controls when there are multiple pages", async () => {
+    const manyPages: EntriesResponse = {
       ...mockEntries,
       totalCount: 100,
       hasMore: true,
     };
-    mockGet.mockResolvedValue({ data: responseWithMore, status: 200, ok: true });
+    mockGet.mockResolvedValue({ data: manyPages, status: 200, ok: true });
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByRole("button", { name: /load more/i })).toBeInTheDocument();
+      expect(screen.getByRole("navigation", { name: /pagination/i })).toBeInTheDocument();
     });
+
+    expect(screen.getByText(/Page/)).toBeInTheDocument();
+    expect(screen.getByRole("button", { name: /previous/i })).toBeDisabled();
+    expect(screen.getByRole("button", { name: /next/i })).toBeEnabled();
   });
 
-  it("does not show 'Load More' button when hasMore is false", async () => {
+  it("hides pagination when there is only one page", async () => {
     mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByText("Showing 4 of 4 entries")).toBeInTheDocument();
+      expect(screen.getByText("Headache")).toBeInTheDocument();
     });
 
-    expect(screen.queryByRole("button", { name: /load more/i })).not.toBeInTheDocument();
+    expect(
+      screen.queryByRole("navigation", { name: /pagination/i })
+    ).not.toBeInTheDocument();
   });
 
-  it("loads more entries when 'Load More' is clicked", async () => {
+  it("loads the next page when Next is clicked", async () => {
     const page1: EntriesResponse = {
       entries: [
         {
@@ -145,7 +166,7 @@ describe("TimelineView", () => {
           severity: 7,
         },
       ],
-      totalCount: 2,
+      totalCount: 30,
       hasMore: true,
     };
     const page2: EntriesResponse = {
@@ -159,7 +180,7 @@ describe("TimelineView", () => {
           dosageUnit: "mg",
         },
       ],
-      totalCount: 2,
+      totalCount: 30,
       hasMore: false,
     };
 
@@ -169,20 +190,35 @@ describe("TimelineView", () => {
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByText("Headache — severity 7")).toBeInTheDocument();
+      expect(screen.getByText("Headache")).toBeInTheDocument();
     });
 
-    const loadMoreBtn = screen.getByRole("button", { name: /load more/i });
-    fireEvent.click(loadMoreBtn);
+    fireEvent.click(screen.getByRole("button", { name: /next/i }));
 
     await waitFor(() => {
-      expect(screen.getByText("Aspirin — 100mg")).toBeInTheDocument();
+      expect(screen.getByText("Aspirin")).toBeInTheDocument();
     });
 
-    // Both entries should be visible
-    expect(screen.getByText("Headache — severity 7")).toBeInTheDocument();
     expect(mockGet).toHaveBeenCalledTimes(2);
-    expect(mockGet).toHaveBeenCalledWith("/entries/timeline?pageSize=50&page=2");
+    expect(mockGet).toHaveBeenLastCalledWith("/entries/timeline?pageSize=15&page=2");
+  });
+
+  it("switches to the by-type endpoint when a type filter is selected", async () => {
+    mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
+    render(<TimelineView />);
+
+    await waitFor(() => {
+      expect(screen.getByText("Headache")).toBeInTheDocument();
+    });
+
+    // Open the filter panel
+    fireEvent.click(screen.getByRole("button", { name: /filters/i }));
+    // Select the "symptom" type
+    fireEvent.click(screen.getByRole("button", { name: /^symptom$/i }));
+
+    await waitFor(() => {
+      expect(mockGet).toHaveBeenLastCalledWith("/entries?pageSize=15&type=symptom");
+    });
   });
 
   it("shows empty state when no entries exist", async () => {
@@ -199,7 +235,9 @@ describe("TimelineView", () => {
     });
 
     expect(
-      screen.getByText("Start logging symptoms, medications, food, or sleep to see them here.")
+      screen.getByText(
+        "Start logging symptoms, medications, food, or sleep to see them here."
+      )
     ).toBeInTheDocument();
   });
 
@@ -227,16 +265,7 @@ describe("TimelineView", () => {
     fireEvent.click(screen.getByText("Try again"));
 
     await waitFor(() => {
-      expect(screen.getByText("Headache — severity 7")).toBeInTheDocument();
-    });
-  });
-
-  it("fetches entries with pageSize=50 on initial load", async () => {
-    mockGet.mockResolvedValue({ data: mockEntries, status: 200, ok: true });
-    render(<TimelineView />);
-
-    await waitFor(() => {
-      expect(mockGet).toHaveBeenCalledWith("/entries/timeline?pageSize=50&page=1");
+      expect(screen.getByText("Headache")).toBeInTheDocument();
     });
   });
 
@@ -261,7 +290,7 @@ describe("TimelineView", () => {
     });
   });
 
-  it("displays sleep duration formatted correctly", async () => {
+  it("displays short sleep duration correctly", async () => {
     const response: EntriesResponse = {
       entries: [
         {
@@ -279,7 +308,9 @@ describe("TimelineView", () => {
     render(<TimelineView />);
 
     await waitFor(() => {
-      expect(screen.getByText("45m — quality 3")).toBeInTheDocument();
+      expect(screen.getByText("45m sleep")).toBeInTheDocument();
     });
+
+    expect(screen.getByText("Quality 3/10")).toBeInTheDocument();
   });
 });

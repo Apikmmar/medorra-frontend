@@ -182,7 +182,7 @@ describe("SymptomEntryForm", () => {
     fireEvent.click(submitBtn);
 
     await waitFor(() => {
-      expect(mockPost).toHaveBeenCalledWith("/entries", {
+      expect(mockPost).toHaveBeenCalledWith("/entries/symptom", {
         entryType: "symptom",
         symptomName: "Migraine",
         severity: 8,

@@ -183,7 +183,7 @@ describe("SleepEntryForm", () => {
     fireEvent.click(screen.getByText("Save Sleep Entry"));
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith("/entries", {
+      expect(apiClient.post).toHaveBeenCalledWith("/entries/sleep", {
         entryType: "sleep",
         segments: [
           {

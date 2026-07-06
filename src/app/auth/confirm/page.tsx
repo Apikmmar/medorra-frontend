@@ -1,11 +1,11 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
 import { cognitoService } from "@/lib/auth";
 
-export default function ConfirmPage() {
+function ConfirmForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const emailParam = searchParams.get("email") || "";
@@ -136,5 +136,13 @@ export default function ConfirmPage() {
         </form>
       </div>
     </div>
+  );
+}
+
+export default function ConfirmPage() {
+  return (
+    <Suspense fallback={null}>
+      <ConfirmForm />
+    </Suspense>
   );
 }

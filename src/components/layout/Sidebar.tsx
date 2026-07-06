@@ -1,6 +1,7 @@
 "use client";
 
 import { NavItem, NavItemProps } from "./NavItem";
+import { Logo } from "./Logo";
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -45,7 +46,7 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         role="navigation"
       >
         <div className="flex h-16 items-center justify-between border-b border-gray-200 px-4">
-          <span className="text-lg font-semibold text-indigo-700">Medorra</span>
+          <Logo />
           <button
             onClick={onClose}
             className="desktop:hidden rounded-md p-1 text-gray-500 hover:bg-gray-100 hover:text-gray-700"

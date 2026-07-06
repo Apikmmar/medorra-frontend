@@ -115,7 +115,7 @@ describe("MedicationEntryForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith("/entries", {
+      expect(apiClient.post).toHaveBeenCalledWith("/entries/medication", {
         entryType: "medication",
         medicationName: "Metformin",
         scheduleType: "scheduled",
@@ -157,7 +157,7 @@ describe("MedicationEntryForm", () => {
     fireEvent.click(submitButton);
 
     await waitFor(() => {
-      expect(apiClient.post).toHaveBeenCalledWith("/entries", {
+      expect(apiClient.post).toHaveBeenCalledWith("/entries/medication", {
         entryType: "medication",
         medicationName: "Ibuprofen",
         dosageAmount: 200,

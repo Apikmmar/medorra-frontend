@@ -5,6 +5,7 @@ import { usePathname } from "next/navigation";
 import { Sidebar } from "./Sidebar";
 import { BottomNav } from "./BottomNav";
 import { OfflineBanner } from "./OfflineBanner";
+import { Logo } from "./Logo";
 import { MenuIcon } from "./icons";
 import { AuthGuard } from "@/components/auth";
 
@@ -33,28 +34,28 @@ export function AppLayout({ children }: AppLayoutProps) {
           <OfflineBanner />
 
           {/* Top header bar for tablet with hamburger menu */}
-          <header className="sticky top-0 z-20 hidden border-b border-gray-200 bg-white tablet:flex desktop:hidden items-center h-16 px-4">
+          <header className="sticky top-0 z-20 hidden h-16 items-center border-b border-gray-200 bg-white/80 px-4 backdrop-blur tablet:flex desktop:hidden">
             <button
               onClick={() => setSidebarOpen(true)}
-              className="rounded-md p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
+              className="rounded-lg p-2 text-gray-600 hover:bg-gray-100 hover:text-gray-900"
               aria-label="Open navigation menu"
             >
-              <span className="h-5 w-5 block">
+              <span className="block h-5 w-5">
                 <MenuIcon />
               </span>
             </button>
-            <span className="ml-3 text-lg font-semibold text-indigo-700">
-              Medorra
+            <span className="ml-3">
+              <Logo />
             </span>
           </header>
 
           {/* Mobile top bar */}
-          <header className="sticky top-0 z-20 flex items-center justify-center border-b border-gray-200 bg-white h-14 tablet:hidden">
-            <span className="text-lg font-semibold text-indigo-700">Medorra</span>
+          <header className="sticky top-0 z-20 flex h-14 items-center justify-center border-b border-gray-200 bg-white/80 backdrop-blur tablet:hidden">
+            <Logo />
           </header>
 
           {/* Page content */}
-          <main className="flex-1 p-4 pb-20 tablet:p-6 tablet:pb-6 desktop:p-8">
+          <main className="flex-1 p-4 pb-24 tablet:p-6 tablet:pb-6 desktop:p-8">
             {children}
           </main>
         </div>

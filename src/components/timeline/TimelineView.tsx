@@ -1,7 +1,10 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import Link from "next/link";
 import { apiClient } from "@/lib/api/client";
+import { Card, Spinner, EmptyState, Pagination, getEntryVisual } from "@/components/ui";
+import { EntryFilters, EntryFilterState } from "./EntryFilters";
 
 export interface TimelineEntry {
   entryId: string;
@@ -20,209 +23,381 @@ export interface TimelineEntry {
   // Sleep fields
   totalDuration?: number;
   qualityRating?: number;
+  // Shared
+  notes?: string;
 }
 
 export interface EntriesResponse {
   entries: TimelineEntry[];
   totalCount: number;
   hasMore: boolean;
+  /** Present on the timeline (page-based) endpoint. */
+  page?: number;
+  pageSize?: number;
+  /** Present on the by-type (cursor-based) endpoint. */
+  lastKey?: string | null;
 }
 
-const PAGE_SIZE = 50;
+const PAGE_SIZE = 15;
 
-function formatTimestamp(iso: string): string {
-  const date = new Date(iso);
-  return date.toLocaleString(undefined, {
-    year: "numeric",
-    month: "short",
-    day: "numeric",
+function formatTime(iso: string): string {
+  return new Date(iso).toLocaleTimeString(undefined, {
     hour: "2-digit",
     minute: "2-digit",
   });
 }
 
-function getEntrySummary(entry: TimelineEntry): string {
+/** Group header label: "Today", "Yesterday", or a formatted date. */
+function formatDateHeading(iso: string): string {
+  const date = new Date(iso);
+  const today = new Date();
+  const yesterday = new Date();
+  yesterday.setDate(today.getDate() - 1);
+
+  const sameDay = (a: Date, b: Date) =>
+    a.getFullYear() === b.getFullYear() &&
+    a.getMonth() === b.getMonth() &&
+    a.getDate() === b.getDate();
+
+  if (sameDay(date, today)) return "Today";
+  if (sameDay(date, yesterday)) return "Yesterday";
+
+  return date.toLocaleDateString(undefined, {
+    weekday: "long",
+    month: "long",
+    day: "numeric",
+    year: date.getFullYear() === today.getFullYear() ? undefined : "numeric",
+  });
+}
+
+function dateKey(iso: string): string {
+  const d = new Date(iso);
+  return `${d.getFullYear()}-${d.getMonth()}-${d.getDate()}`;
+}
+
+function getEntryTitle(entry: TimelineEntry): string {
   switch (entry.entryType) {
     case "symptom":
-      return `${entry.symptomName || "Unknown symptom"} — severity ${entry.severity ?? "?"}`;
+      return entry.symptomName || "Symptom";
     case "medication":
-      if (entry.dosageAmount && entry.dosageUnit) {
-        return `${entry.medicationName || "Unknown medication"} — ${entry.dosageAmount}${entry.dosageUnit}`;
-      }
-      return entry.medicationName || "Unknown medication";
+      return entry.medicationName || "Medication";
     case "food":
       return entry.mealType
         ? entry.mealType.charAt(0).toUpperCase() + entry.mealType.slice(1)
         : "Meal";
     case "sleep": {
-      const hours = entry.totalDuration ? Math.floor(entry.totalDuration / 60) : 0;
-      const minutes = entry.totalDuration ? entry.totalDuration % 60 : 0;
-      const duration =
-        hours > 0 ? `${hours}h ${minutes}m` : `${minutes}m`;
-      return `${duration} — quality ${entry.qualityRating ?? "?"}`;
+      const total = entry.totalDuration ?? 0;
+      const hours = Math.floor(total / 60);
+      const minutes = total % 60;
+      return hours > 0 ? `${hours}h ${minutes}m sleep` : `${minutes}m sleep`;
     }
     default:
       return "Entry";
   }
 }
 
-function getEntryTypeLabel(type: string): string {
-  switch (type) {
+function getEntryDetail(entry: TimelineEntry): string | null {
+  switch (entry.entryType) {
     case "symptom":
-      return "Symptom";
+      return entry.severity != null ? `Severity ${entry.severity}/10` : null;
     case "medication":
-      return "Medication";
-    case "food":
-      return "Food";
+      if (entry.dosageAmount && entry.dosageUnit) {
+        return `${entry.dosageAmount}${entry.dosageUnit}`;
+      }
+      return null;
+    case "food": {
+      const items = entry.items?.map((i) => i.description).filter(Boolean) ?? [];
+      return items.length ? items.join(", ") : null;
+    }
     case "sleep":
-      return "Sleep";
+      return entry.qualityRating != null ? `Quality ${entry.qualityRating}/10` : null;
     default:
-      return "Entry";
+      return null;
   }
 }
 
-function getEntryTypeBadgeColor(type: string): string {
-  switch (type) {
-    case "symptom":
-      return "bg-red-100 text-red-800";
-    case "medication":
-      return "bg-blue-100 text-blue-800";
-    case "food":
-      return "bg-green-100 text-green-800";
-    case "sleep":
-      return "bg-purple-100 text-purple-800";
-    default:
-      return "bg-gray-100 text-gray-800";
-  }
+interface EntryRowProps {
+  entry: TimelineEntry;
+}
+
+function EntryRow({ entry }: EntryRowProps) {
+  const visual = getEntryVisual(entry.entryType);
+  const detail = getEntryDetail(entry);
+
+  return (
+    <li className="flex items-start gap-3 px-4 py-3.5 transition-colors hover:bg-gray-50/70 sm:px-5">
+      <span
+        className={`mt-0.5 flex h-9 w-9 flex-shrink-0 items-center justify-center rounded-xl ${visual.avatar}`}
+        aria-hidden="true"
+      >
+        {visual.icon}
+      </span>
+
+      <div className="min-w-0 flex-1">
+        <div className="flex items-center gap-2">
+          <p className="truncate text-sm font-semibold text-gray-900">
+            {getEntryTitle(entry)}
+          </p>
+          <span
+            className={`inline-flex flex-shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${visual.badge}`}
+          >
+            {visual.label}
+          </span>
+        </div>
+        {detail && (
+          <p className="mt-0.5 truncate text-sm text-gray-500">{detail}</p>
+        )}
+        {entry.notes && (
+          <p className="mt-1 line-clamp-2 text-xs text-gray-400">{entry.notes}</p>
+        )}
+      </div>
+
+      <time
+        dateTime={entry.createdAt}
+        className="flex-shrink-0 pt-0.5 text-xs tabular-nums text-gray-400"
+      >
+        {formatTime(entry.createdAt)}
+      </time>
+    </li>
+  );
+}
+
+function countActiveFilters(f: EntryFilterState): number {
+  let n = 0;
+  if (f.entryType) n += 1;
+  if (f.startDate) n += 1;
+  if (f.endDate) n += 1;
+  return n;
 }
 
 export function TimelineView() {
   const [entries, setEntries] = useState<TimelineEntry[]>([]);
-  const [totalCount, setTotalCount] = useState<number>(0);
-  const [hasMore, setHasMore] = useState<boolean>(false);
-  const [page, setPage] = useState<number>(1);
-  const [isLoading, setIsLoading] = useState<boolean>(true);
-  const [isLoadingMore, setIsLoadingMore] = useState<boolean>(false);
-  const [error, setError] = useState<string | null>(null);
+  const [totalCount, setTotalCount] = useState(0);
+  const [hasMore, setHasMore] = useState(false);
 
-  const fetchEntries = useCallback(async (pageNum: number, append: boolean) => {
-    try {
-      if (append) {
-        setIsLoadingMore(true);
-      } else {
-        setIsLoading(true);
-      }
+  const [filters, setFilters] = useState<EntryFilterState>({});
+  const [pageIndex, setPageIndex] = useState(0); // 0-based
+  const [cursorStack, setCursorStack] = useState<(string | null)[]>([null]);
+  const [nextCursor, setNextCursor] = useState<string | null>(null);
+
+  const [isLoading, setIsLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
+  const [showFilters, setShowFilters] = useState(false);
+
+  const loadPage = useCallback(
+    async (f: EntryFilterState, idx: number, stack: (string | null)[]) => {
+      setIsLoading(true);
       setError(null);
 
-      const response = await apiClient.get<EntriesResponse>(
-        `/entries/timeline?pageSize=${PAGE_SIZE}&page=${pageNum}`
-      );
+      const qs = new URLSearchParams();
+      qs.set("pageSize", String(PAGE_SIZE));
+      if (f.startDate) qs.set("startDate", f.startDate);
+      if (f.endDate) qs.set("endDate", f.endDate);
 
-      const data = response.data;
-
-      if (append) {
-        setEntries((prev) => [...prev, ...data.entries]);
+      let path: string;
+      if (f.entryType) {
+        // By-type endpoint: cursor-based pagination.
+        qs.set("type", f.entryType);
+        const cursor = stack[idx];
+        if (cursor) qs.set("lastKey", cursor);
+        path = `/entries?${qs.toString()}`;
       } else {
-        setEntries(data.entries);
+        // Timeline endpoint: page-based pagination.
+        qs.set("page", String(idx + 1));
+        path = `/entries/timeline?${qs.toString()}`;
       }
-      setTotalCount(data.totalCount);
-      setHasMore(data.hasMore);
-    } catch (err) {
-      const message =
-        err instanceof Error ? err.message : "Failed to load entries";
-      setError(message);
-    } finally {
-      setIsLoading(false);
-      setIsLoadingMore(false);
-    }
-  }, []);
+
+      try {
+        const res = await apiClient.get<EntriesResponse>(path);
+        const data = res.data;
+
+        setEntries(data.entries);
+        setTotalCount(data.totalCount);
+        setHasMore(data.hasMore);
+        setNextCursor(data.lastKey ?? null);
+
+        setFilters(f);
+        setPageIndex(idx);
+        setCursorStack(stack);
+      } catch (err) {
+        setError(err instanceof Error ? err.message : "Failed to load entries");
+      } finally {
+        setIsLoading(false);
+      }
+    },
+    []
+  );
 
   useEffect(() => {
-    fetchEntries(1, false);
-  }, [fetchEntries]);
+    loadPage({}, 0, [null]);
+  }, [loadPage]);
 
-  const handleLoadMore = () => {
-    const nextPage = page + 1;
-    setPage(nextPage);
-    fetchEntries(nextPage, true);
-  };
+  const handleFilterChange = useCallback(
+    (next: EntryFilterState) => {
+      // Any filter change resets to the first page and clears cursors.
+      loadPage(next, 0, [null]);
+    },
+    [loadPage]
+  );
 
-  if (isLoading) {
-    return (
-      <div className="flex items-center justify-center py-12" role="status" aria-label="Loading entries">
-        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-indigo-600"></div>
-        <span className="ml-3 text-sm text-gray-600">Loading entries...</span>
-      </div>
-    );
-  }
+  const handleNext = useCallback(() => {
+    if (!hasMore) return;
+    if (filters.entryType) {
+      const stack = [...cursorStack];
+      stack[pageIndex + 1] = nextCursor;
+      loadPage(filters, pageIndex + 1, stack);
+    } else {
+      loadPage(filters, pageIndex + 1, cursorStack);
+    }
+  }, [hasMore, filters, cursorStack, pageIndex, nextCursor, loadPage]);
 
-  if (error) {
-    return (
-      <div className="rounded-md bg-red-50 border border-red-200 p-4" role="alert">
-        <p className="text-sm text-red-700">{error}</p>
-        <button
-          onClick={() => fetchEntries(1, false)}
-          className="mt-2 text-sm font-medium text-red-600 hover:text-red-500 underline"
-        >
-          Try again
-        </button>
-      </div>
-    );
-  }
+  const handlePrev = useCallback(() => {
+    if (pageIndex === 0) return;
+    loadPage(filters, pageIndex - 1, cursorStack);
+  }, [pageIndex, filters, cursorStack, loadPage]);
 
-  if (entries.length === 0) {
-    return (
-      <div className="text-center py-12">
-        <p className="text-gray-500 text-lg">No entries yet</p>
-        <p className="text-gray-400 text-sm mt-1">
-          Start logging symptoms, medications, food, or sleep to see them here.
-        </p>
-      </div>
-    );
+  const totalPages = Math.max(1, Math.ceil(totalCount / PAGE_SIZE));
+  const activeFilters = countActiveFilters(filters);
+  const rangeStart = totalCount === 0 ? 0 : pageIndex * PAGE_SIZE + 1;
+  const rangeEnd = pageIndex * PAGE_SIZE + entries.length;
+
+  // Group current page entries by day for date headings.
+  const groups: { key: string; label: string; items: TimelineEntry[] }[] = [];
+  for (const entry of entries) {
+    const key = dateKey(entry.createdAt);
+    const last = groups[groups.length - 1];
+    if (last && last.key === key) {
+      last.items.push(entry);
+    } else {
+      groups.push({ key, label: formatDateHeading(entry.createdAt), items: [entry] });
+    }
   }
 
   return (
     <div className="space-y-4">
-      <div className="flex items-center justify-between">
-        <p className="text-sm text-gray-600">
-          Showing {entries.length} of {totalCount} entries
+      {/* Toolbar: result summary + filter toggle */}
+      <div className="flex items-center justify-between gap-3">
+        <p className="text-sm text-gray-500">
+          {totalCount > 0 ? (
+            <>
+              <span className="font-medium text-gray-900">
+                {rangeStart}–{rangeEnd}
+              </span>{" "}
+              of {totalCount}
+            </>
+          ) : (
+            "No entries"
+          )}
         </p>
+
+        <button
+          type="button"
+          onClick={() => setShowFilters((v) => !v)}
+          className="inline-flex items-center gap-2 rounded-lg border border-gray-200 bg-white px-3 py-2 text-sm font-medium text-gray-700 transition-colors hover:bg-gray-50"
+          aria-expanded={showFilters}
+        >
+          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fillRule="evenodd"
+              d="M2 4.5A.5.5 0 012.5 4h15a.5.5 0 01.4.8l-5.9 7.4V17a.5.5 0 01-.72.45l-3-1.5A.5.5 0 018 15.5v-3.3L2.1 4.8A.5.5 0 012 4.5z"
+              clipRule="evenodd"
+            />
+          </svg>
+          Filters
+          {activeFilters > 0 && (
+            <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-brand-600 px-1 text-[11px] font-semibold text-white">
+              {activeFilters}
+            </span>
+          )}
+        </button>
       </div>
 
-      <ul className="divide-y divide-gray-200" aria-label="Timeline entries">
-        {entries.map((entry) => (
-          <li key={entry.entryId} className="py-4">
-            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
-              <div className="flex items-start gap-3">
-                <span
-                  className={`inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-medium ${getEntryTypeBadgeColor(entry.entryType)}`}
-                >
-                  {getEntryTypeLabel(entry.entryType)}
-                </span>
-                <span className="text-sm text-gray-900">
-                  {getEntrySummary(entry)}
-                </span>
-              </div>
-              <time
-                dateTime={entry.createdAt}
-                className="text-xs text-gray-500 whitespace-nowrap"
-              >
-                {formatTimestamp(entry.createdAt)}
-              </time>
-            </div>
-          </li>
-        ))}
-      </ul>
+      {/* Collapsible filter panel */}
+      {showFilters && (
+        <Card className="animate-fade-in p-4 sm:p-5">
+          <EntryFilters onFilterChange={handleFilterChange} />
+        </Card>
+      )}
 
-      {hasMore && (
-        <div className="flex justify-center pt-4">
+      {/* Content */}
+      {isLoading ? (
+        <Card className="py-16">
+          <Spinner label="Loading entries..." />
+        </Card>
+      ) : error ? (
+        <div
+          className="rounded-2xl border border-red-200 bg-red-50 p-4"
+          role="alert"
+        >
+          <p className="text-sm text-red-700">{error}</p>
           <button
-            onClick={handleLoadMore}
-            disabled={isLoadingMore}
-            className="rounded-md bg-white px-4 py-2 text-sm font-medium text-indigo-600 border border-indigo-300 shadow-sm hover:bg-indigo-50 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:ring-offset-2 disabled:opacity-50 disabled:cursor-not-allowed"
+            onClick={() => loadPage(filters, pageIndex, cursorStack)}
+            className="mt-2 text-sm font-medium text-red-600 underline hover:text-red-500"
           >
-            {isLoadingMore ? "Loading..." : "Load More"}
+            Try again
           </button>
+        </div>
+      ) : entries.length === 0 ? (
+        <Card>
+          <EmptyState
+            icon={
+              <svg className="h-6 w-6" viewBox="0 0 24 24" fill="none" aria-hidden="true">
+                <path
+                  d="M9 5H7a2 2 0 00-2 2v12a2 2 0 002 2h10a2 2 0 002-2V7a2 2 0 00-2-2h-2M9 5a2 2 0 002 2h2a2 2 0 002-2M9 5a2 2 0 012-2h2a2 2 0 012 2"
+                  stroke="currentColor"
+                  strokeWidth="2"
+                  strokeLinecap="round"
+                  strokeLinejoin="round"
+                />
+              </svg>
+            }
+            title={activeFilters > 0 ? "No entries match your filters" : "No entries yet"}
+            description={
+              activeFilters > 0
+                ? "Try adjusting or clearing your filters to see more."
+                : "Start logging symptoms, medications, food, or sleep to see them here."
+            }
+            action={
+              activeFilters === 0 ? (
+                <Link
+                  href="/entries/new"
+                  className="inline-flex items-center rounded-lg bg-brand-600 px-4 py-2 text-sm font-semibold text-white shadow-sm transition-colors hover:bg-brand-500"
+                >
+                  Log your first entry
+                </Link>
+              ) : undefined
+            }
+          />
+        </Card>
+      ) : (
+        <div className="space-y-5 animate-fade-in">
+          {groups.map((group) => (
+            <section key={group.key}>
+              <h2 className="mb-2 px-1 text-xs font-semibold uppercase tracking-wide text-gray-400">
+                {group.label}
+              </h2>
+              <Card className="overflow-hidden">
+                <ul className="divide-y divide-gray-100" aria-label="Timeline entries">
+                  {group.items.map((entry) => (
+                    <EntryRow key={entry.entryId} entry={entry} />
+                  ))}
+                </ul>
+              </Card>
+            </section>
+          ))}
+
+          {totalPages > 1 && (
+            <div className="pt-1">
+              <Pagination
+                page={pageIndex + 1}
+                totalPages={totalPages}
+                canPrev={pageIndex > 0}
+                canNext={hasMore}
+                onPrev={handlePrev}
+                onNext={handleNext}
+              />
+            </div>
+          )}
         </div>
       )}
     </div>

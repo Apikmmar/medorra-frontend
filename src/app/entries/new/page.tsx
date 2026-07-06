@@ -1,69 +1,105 @@
 "use client";
 
-import { useState } from "react";
+import { Suspense, useState } from "react";
+import { useSearchParams } from "next/navigation";
 import {
   SymptomEntryForm,
   MedicationEntryForm,
   FoodEntryForm,
   SleepEntryForm,
 } from "@/components/entries";
+import { Card, ENTRY_VISUALS, EntryType } from "@/components/ui";
 
-const ENTRY_TYPES = [
-  { id: "symptom", label: "Symptom" },
-  { id: "medication", label: "Medication" },
-  { id: "food", label: "Food" },
-  { id: "sleep", label: "Sleep" },
-] as const;
+const ENTRY_TYPES: EntryType[] = ["symptom", "medication", "food", "sleep"];
 
-type EntryType = (typeof ENTRY_TYPES)[number]["id"];
+function isEntryType(value: string | null): value is EntryType {
+  return value != null && (ENTRY_TYPES as string[]).includes(value);
+}
 
-export default function NewEntryPage() {
-  const [selectedType, setSelectedType] = useState<EntryType>("symptom");
+function NewEntryContent() {
+  const searchParams = useSearchParams();
+  const initialType = searchParams.get("type");
+
+  const [selectedType, setSelectedType] = useState<EntryType>(
+    isEntryType(initialType) ? initialType : "symptom"
+  );
   const [successMessage, setSuccessMessage] = useState<string | null>(null);
 
   function handleSuccess() {
-    setSuccessMessage(`${selectedType.charAt(0).toUpperCase() + selectedType.slice(1)} entry logged successfully!`);
+    const label = ENTRY_VISUALS[selectedType].label;
+    setSuccessMessage(`${label} entry logged successfully!`);
     setTimeout(() => setSuccessMessage(null), 3000);
   }
 
   return (
-    <div className="max-w-2xl mx-auto">
-      <h1 className="text-2xl font-bold text-gray-900">Log Entry</h1>
-      <p className="mt-1 text-gray-600">
-        Record a new diary entry.
-      </p>
+    <div className="mx-auto max-w-2xl">
+      <h1 className="text-2xl font-bold tracking-tight text-gray-900">
+        Log Entry
+      </h1>
+      <p className="mt-1 text-sm text-gray-500">Record a new diary entry.</p>
 
       {successMessage && (
-        <div className="mt-4 rounded-md bg-green-50 p-3 text-sm text-green-700" role="status">
+        <div
+          className="mt-4 flex items-center gap-2 rounded-xl border border-emerald-200 bg-emerald-50 p-3 text-sm text-emerald-700 animate-fade-in"
+          role="status"
+        >
+          <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
+            <path
+              fillRule="evenodd"
+              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.58l-1.3-1.3a1 1 0 10-1.4 1.42l2 2a1 1 0 001.4 0l4-4z"
+              clipRule="evenodd"
+            />
+          </svg>
           {successMessage}
         </div>
       )}
 
-      {/* Entry type selector */}
-      <div className="mt-6 flex gap-2 flex-wrap">
-        {ENTRY_TYPES.map((type) => (
-          <button
-            key={type.id}
-            type="button"
-            onClick={() => setSelectedType(type.id)}
-            className={`rounded-full px-4 py-2 text-sm font-medium transition-colors ${
-              selectedType === type.id
-                ? "bg-indigo-600 text-white"
-                : "bg-gray-100 text-gray-700 hover:bg-gray-200"
-            }`}
-          >
-            {type.label}
-          </button>
-        ))}
+      {/* Type selector */}
+      <div className="mt-6 grid grid-cols-2 gap-2 sm:grid-cols-4">
+        {ENTRY_TYPES.map((type) => {
+          const v = ENTRY_VISUALS[type];
+          const active = selectedType === type;
+          return (
+            <button
+              key={type}
+              type="button"
+              onClick={() => setSelectedType(type)}
+              aria-pressed={active}
+              className={`flex items-center gap-2 rounded-xl border px-3 py-2.5 text-sm font-medium transition-all ${
+                active
+                  ? "border-brand-500 bg-brand-50 text-brand-700 shadow-sm"
+                  : "border-gray-200 bg-white text-gray-600 hover:border-gray-300 hover:bg-gray-50"
+              }`}
+            >
+              <span
+                className={`flex h-7 w-7 flex-shrink-0 items-center justify-center rounded-lg ${
+                  active ? v.avatar : "bg-gray-100 text-gray-400"
+                }`}
+                aria-hidden="true"
+              >
+                {v.icon}
+              </span>
+              {v.label}
+            </button>
+          );
+        })}
       </div>
 
-      {/* Entry form */}
-      <div className="mt-6">
+      {/* Form */}
+      <Card className="mt-6 p-5 sm:p-6 animate-fade-in">
         {selectedType === "symptom" && <SymptomEntryForm onSuccess={handleSuccess} />}
         {selectedType === "medication" && <MedicationEntryForm onSuccess={handleSuccess} />}
         {selectedType === "food" && <FoodEntryForm onSuccess={handleSuccess} />}
         {selectedType === "sleep" && <SleepEntryForm onSuccess={handleSuccess} />}
-      </div>
+      </Card>
     </div>
+  );
+}
+
+export default function NewEntryPage() {
+  return (
+    <Suspense fallback={null}>
+      <NewEntryContent />
+    </Suspense>
   );
 }
