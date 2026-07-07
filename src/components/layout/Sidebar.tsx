@@ -38,8 +38,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
 
       <aside
         className={`
-          fixed top-0 left-0 z-40 h-full w-64 transform bg-surface shadow-lg transition-transform duration-200 ease-in-out
-          desktop:translate-x-0 desktop:static desktop:z-0 desktop:shadow-none desktop:border-r desktop:border-border
+          fixed inset-y-0 left-0 z-40 w-64 transform bg-surface shadow-lg transition-transform duration-200 ease-in-out
+          desktop:translate-x-0 desktop:static desktop:z-0 desktop:shadow-none desktop:border-r desktop:border-border desktop:self-stretch
           ${open ? "translate-x-0" : "-translate-x-full"}
         `}
         aria-label="Main navigation"
