@@ -54,7 +54,15 @@ export function InsightsPanel() {
       const response = await apiClient.get<InsightsResponse>("/insights");
       const data = response.data;
 
-      setInsights(data.insights);
+      // Defensive coercion: confidenceScore may arrive as a string from
+      // older backend responses. Normalize to a number so .toFixed() and
+      // numeric comparisons always work.
+      const normalizedInsights = (data.insights || []).map((insight) => ({
+        ...insight,
+        confidenceScore: Number(insight.confidenceScore) || 0,
+      }));
+
+      setInsights(normalizedInsights);
       setThresholdMet(data.thresholdMet);
       setDaysRemaining(data.daysRemaining);
     } catch (err) {
