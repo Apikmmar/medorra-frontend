@@ -4,6 +4,7 @@ import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
 import { InsightActions } from "./InsightActions";
 import { InsightAudio } from "./InsightAudio";
+import { SupportingEntriesModal } from "./SupportingEntriesModal";
 
 export interface Insight {
   userId: string;
@@ -50,6 +51,7 @@ export function InsightsPanel() {
   const [daysRemaining, setDaysRemaining] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
+  const [modalEntryIds, setModalEntryIds] = useState<string[] | null>(null);
 
   const fetchInsights = useCallback(async () => {
     try {
@@ -208,13 +210,14 @@ export function InsightsPanel() {
 
                 {/* Supporting entries */}
                 <div className="flex items-center gap-2">
-                  <a
-                    href="/timeline"
+                  <button
+                    type="button"
+                    onClick={() => setModalEntryIds(insight.supportingEntryIds)}
                     className="inline-flex items-center text-xs text-accent-text hover:brightness-110 font-medium"
                   >
                     {insight.supportingEntryIds.length} supporting{" "}
                     {insight.supportingEntryIds.length === 1 ? "entry" : "entries"}
-                  </a>
+                  </button>
                 </div>
 
                 {/* Deleted entries warning */}
@@ -250,6 +253,14 @@ export function InsightsPanel() {
             </li>
           ))}
         </ul>
+      )}
+
+      {modalEntryIds && (
+        <SupportingEntriesModal
+          entryIds={modalEntryIds}
+          isOpen={true}
+          onClose={() => setModalEntryIds(null)}
+        />
       )}
     </div>
   );

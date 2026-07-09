@@ -4,3 +4,5 @@ export { InsightActions } from "./InsightActions";
 export type { InsightActionsProps } from "./InsightActions";
 export { InsightAudio } from "./InsightAudio";
 export type { InsightAudioProps } from "./InsightAudio";
+export { SupportingEntriesModal } from "./SupportingEntriesModal";
+export type { SupportingEntriesModalProps } from "./SupportingEntriesModal";
