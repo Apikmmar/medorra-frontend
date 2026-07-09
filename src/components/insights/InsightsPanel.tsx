@@ -3,6 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
 import { InsightActions } from "./InsightActions";
+import { InsightAudio } from "./InsightAudio";
 
 export interface Insight {
   userId: string;
@@ -18,6 +19,10 @@ export interface Insight {
   supportingEntryIds: string[];
   hasDeletedEntries?: boolean;
   status: "active" | "dismissed" | "confirmed";
+  /** S3 object key for the spoken summary (set on the backend). */
+  audioKey?: string;
+  /** Short-lived presigned URL for the spoken summary, generated per request. */
+  audioUrl?: string | null;
   createdAt: string;
   updatedAt: string;
 }
@@ -184,6 +189,9 @@ export function InsightsPanel() {
 
                 {/* Summary */}
                 <p className="text-sm text-fg">{insight.summary}</p>
+
+                {/* Spoken summary (TTS) */}
+                <InsightAudio audioUrl={insight.audioUrl} />
 
                 {/* Details row */}
                 <div className="flex flex-wrap gap-2 text-xs">
