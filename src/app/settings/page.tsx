@@ -3,6 +3,7 @@
 import { useState } from "react";
 import { useAuth } from "@/lib/auth";
 import { apiClient } from "@/lib/api";
+import { ReminderSettings } from "@/components/settings/ReminderSettings";
 
 export default function SettingsPage() {
   const { user, logout } = useAuth();
@@ -86,6 +87,9 @@ export default function SettingsPage() {
           {saving ? "Saving..." : "Save"}
         </button>
       </section>
+
+      {/* Logging reminders */}
+      <ReminderSettings />
     </div>
   );
 }

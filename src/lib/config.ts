@@ -10,6 +10,10 @@ export const config = {
     clientId: process.env.NEXT_PUBLIC_COGNITO_CLIENT_ID || "",
     region: process.env.NEXT_PUBLIC_COGNITO_REGION || "us-east-1",
   },
+  push: {
+    /** VAPID public key for web push subscriptions (base64url). */
+    vapidPublicKey: process.env.NEXT_PUBLIC_VAPID_PUBLIC_KEY || "",
+  },
   session: {
     /** Inactivity timeout in milliseconds (15 minutes) */
     inactivityTimeoutMs: 15 * 60 * 1000,

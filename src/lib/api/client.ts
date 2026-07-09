@@ -140,7 +140,10 @@ export const apiClient = {
     });
   },
 
-  delete<T>(path: string): Promise<ApiResponse<T>> {
-    return makeRequest<T>(path, { method: "DELETE" });
+  delete<T>(path: string, body?: unknown): Promise<ApiResponse<T>> {
+    return makeRequest<T>(path, {
+      method: "DELETE",
+      body: body ? JSON.stringify(body) : undefined,
+    });
   },
 };
