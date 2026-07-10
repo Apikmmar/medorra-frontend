@@ -7,6 +7,7 @@ import {
   PlusCircleIcon,
   TimelineIcon,
   InsightsIcon,
+  TrendsIcon,
   SettingsIcon,
 } from "./icons";
 
@@ -15,6 +16,7 @@ const bottomNavItems = [
   { href: "/entries/new", label: "Log", icon: <PlusCircleIcon /> },
   { href: "/timeline", label: "Timeline", icon: <TimelineIcon /> },
   { href: "/insights", label: "Insights", icon: <InsightsIcon /> },
+  { href: "/trends", label: "Trends", icon: <TrendsIcon /> },
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 

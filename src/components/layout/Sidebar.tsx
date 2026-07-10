@@ -7,6 +7,7 @@ import {
   PlusCircleIcon,
   TimelineIcon,
   InsightsIcon,
+  TrendsIcon,
   SettingsIcon,
   CloseIcon,
 } from "./icons";
@@ -16,6 +17,7 @@ const navItems: NavItemProps[] = [
   { href: "/entries/new", label: "Log Entry", icon: <PlusCircleIcon /> },
   { href: "/timeline", label: "Timeline", icon: <TimelineIcon /> },
   { href: "/insights", label: "Insights", icon: <InsightsIcon /> },
+  { href: "/trends", label: "Trends", icon: <TrendsIcon /> },
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 
