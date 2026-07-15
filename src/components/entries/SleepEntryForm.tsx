@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
 
 interface SleepSegment {
   startTime: string;
@@ -121,6 +122,9 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
         if (duration <= 0) {
           return "End time must be after start time";
         }
+      }
+      if (isFutureDateTime(segment.startTime) || isFutureDateTime(segment.endTime)) {
+        return "Sleep times cannot be in the future";
       }
       return "";
     },
@@ -390,6 +394,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
                 <input
                   id={`segment-start-${index}`}
                   type="datetime-local"
+                  max={nowLocalInputValue()}
                   value={segment.startTime}
                   onChange={(e) =>
                     updateSegment(index, "startTime", e.target.value)
@@ -409,6 +414,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
                 <input
                   id={`segment-end-${index}`}
                   type="datetime-local"
+                  max={nowLocalInputValue()}
                   value={segment.endTime}
                   onChange={(e) =>
                     updateSegment(index, "endTime", e.target.value)

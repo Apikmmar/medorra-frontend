@@ -33,7 +33,26 @@ export function VoiceEntryReview({
     setEntries((prev) => prev.filter((_, i) => i !== idx));
   }
 
+  function addEntry(entryType: EntryType) {
+    setEntries((prev) => [
+      ...prev,
+      {
+        clientEntryId: newId(),
+        entryType,
+        data: {},
+        confidence: 1,
+        missingFields: [],
+        warnings: [],
+      },
+    ]);
+  }
+
   async function handleConfirm() {
+    if (entries.some(hasFutureEventTime)) {
+      setError("One or more entries have a future date/time. Please correct it before saving.");
+      return;
+    }
+
     setSubmitting(true);
     setError(null);
     try {
@@ -55,27 +74,20 @@ export function VoiceEntryReview({
     }
   }
 
-  if (entries.length === 0) {
-    return (
-      <Card className="p-5">
-        <p className="text-sm text-muted">No entries were detected in your recording.</p>
-        <button
-          type="button"
-          onClick={onCancel}
-          className="mt-3 rounded-lg border border-border px-4 py-2 text-sm text-fg hover:bg-surface-2"
-        >
-          Try again
-        </button>
-      </Card>
-    );
-  }
-
   return (
     <div className="space-y-4">
       {transcript && (
         <Card className="p-4">
           <p className="text-xs font-medium uppercase tracking-wide text-muted">Transcript</p>
           <p className="mt-1 text-sm text-fg">{transcript}</p>
+        </Card>
+      )}
+
+      {entries.length === 0 && (
+        <Card className="p-5">
+          <p className="text-sm text-muted">
+            No entries were detected. You can add one manually below.
+          </p>
         </Card>
       )}
 
@@ -125,6 +137,32 @@ export function VoiceEntryReview({
         );
       })}
 
+      <div className="rounded-xl border border-dashed border-border p-4">
+        <p className="mb-2 text-xs font-medium text-muted">Add an entry</p>
+        <div className="flex flex-wrap gap-2">
+          {(["symptom", "medication", "food", "sleep"] as EntryType[]).map((type) => {
+            const v = ENTRY_VISUALS[type];
+            return (
+              <button
+                key={type}
+                type="button"
+                onClick={() => addEntry(type)}
+                disabled={submitting}
+                className="flex items-center gap-2 rounded-lg border border-border bg-surface px-3 py-2 text-sm font-medium text-fg transition-colors hover:border-border-strong hover:bg-surface-2 disabled:opacity-50"
+              >
+                <span
+                  className={`flex h-6 w-6 items-center justify-center rounded-md ${v.avatar}`}
+                  aria-hidden
+                >
+                  {v.icon}
+                </span>
+                {v.label}
+              </button>
+            );
+          })}
+        </div>
+      </div>
+
       {error && (
         <p className="text-sm text-danger" role="alert">
           {error}
@@ -135,7 +173,7 @@ export function VoiceEntryReview({
         <button
           type="button"
           onClick={handleConfirm}
-          disabled={submitting}
+          disabled={submitting || entries.length === 0}
           className="rounded-lg bg-accent px-4 py-2 text-sm font-medium text-white disabled:opacity-50"
         >
           {submitting
@@ -155,13 +193,92 @@ export function VoiceEntryReview({
   );
 }
 
+/** True if the entry's event time is in the future (5-minute tolerance). */
+function hasFutureEventTime(entry: ProposedEntry): boolean {
+  const tolerance = 5 * 60 * 1000;
+  const now = Date.now();
+
+  const candidates: unknown[] = [];
+  if (entry.entryType === "sleep") {
+    const segments = Array.isArray(entry.data.segments)
+      ? (entry.data.segments as { startTime?: string; endTime?: string }[])
+      : [];
+    for (const seg of segments) {
+      candidates.push(seg.startTime, seg.endTime);
+    }
+  } else {
+    candidates.push(entry.data.timestamp);
+  }
+
+  return candidates.some((c) => {
+    if (typeof c !== "string" || !c) return false;
+    const t = new Date(c).getTime();
+    return !Number.isNaN(t) && t > now + tolerance;
+  });
+}
+
+function newId(): string {
+  if (typeof crypto !== "undefined" && "randomUUID" in crypto) {
+    return crypto.randomUUID();
+  }
+  return `manual-${Date.now()}-${Math.random().toString(36).slice(2)}`;
+}
+
 function textVal(v: unknown): string {
   if (v === null || v === undefined) return "";
   return String(v);
 }
 
+/** Clamp a raw input string to an integer within [min, max]; empty stays undefined. */
+function clampInt(raw: string, min: number, max: number): number | undefined {
+  if (raw === "") return undefined;
+  const n = Math.round(Number(raw));
+  if (Number.isNaN(n)) return undefined;
+  return Math.min(max, Math.max(min, n));
+}
+
 const inputCls =
   "w-full rounded-lg border border-border bg-surface px-3 py-2 text-sm text-fg focus:border-accent focus:outline-none";
+
+/** ISO8601 (with offset) -> value for a datetime-local input, in the browser's local time. */
+function isoToLocalInput(iso: unknown): string {
+  if (typeof iso !== "string" || !iso) return "";
+  const d = new Date(iso);
+  if (Number.isNaN(d.getTime())) return "";
+  const pad = (n: number) => String(n).padStart(2, "0");
+  return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}T${pad(
+    d.getHours()
+  )}:${pad(d.getMinutes())}`;
+}
+
+/** datetime-local value -> ISO8601 string; empty stays undefined. */
+function localInputToIso(local: string): string | undefined {
+  if (!local) return undefined;
+  const d = new Date(local);
+  if (Number.isNaN(d.getTime())) return undefined;
+  return d.toISOString();
+}
+
+function WhenField({
+  idx,
+  value,
+  onChange,
+}: {
+  idx: number;
+  value: unknown;
+  onChange: (idx: number, key: string, value: unknown) => void;
+}) {
+  return (
+    <Field label="Date & time">
+      <input
+        type="datetime-local"
+        className={inputCls}
+        value={isoToLocalInput(value)}
+        onChange={(e) => onChange(idx, "timestamp", localInputToIso(e.target.value))}
+      />
+    </Field>
+  );
+}
 
 function Field({ label, children }: { label: string; children: React.ReactNode }) {
   return (
@@ -198,13 +315,13 @@ function EntryFields({
             type="number"
             min={1}
             max={10}
+            step={1}
             className={inputCls}
             value={textVal(d.severity)}
-            onChange={(e) =>
-              onChange(idx, "severity", e.target.value === "" ? undefined : Number(e.target.value))
-            }
+            onChange={(e) => onChange(idx, "severity", clampInt(e.target.value, 1, 10))}
           />
         </Field>
+        <WhenField idx={idx} value={d.timestamp} onChange={onChange} />
         <Field label="Notes">
           <input
             className={inputCls}
@@ -255,6 +372,7 @@ function EntryFields({
             <option value="scheduled">Scheduled</option>
           </select>
         </Field>
+        <WhenField idx={idx} value={d.timestamp} onChange={onChange} />
       </>
     );
   }
@@ -294,6 +412,7 @@ function EntryFields({
             }
           />
         </Field>
+        <WhenField idx={idx} value={d.timestamp} onChange={onChange} />
       </>
     );
   }
@@ -328,11 +447,10 @@ function EntryFields({
           type="number"
           min={1}
           max={10}
+          step={1}
           className={inputCls}
           value={textVal(d.qualityRating)}
-          onChange={(e) =>
-            onChange(idx, "qualityRating", e.target.value === "" ? undefined : Number(e.target.value))
-          }
+          onChange={(e) => onChange(idx, "qualityRating", clampInt(e.target.value, 1, 10))}
         />
       </Field>
     </>

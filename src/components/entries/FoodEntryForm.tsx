@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack", "beverage"] as const;
 type MealType = (typeof MEAL_TYPES)[number];
@@ -19,6 +20,7 @@ interface FoodEntryFormData {
 
 interface FieldErrors {
   mealType?: string;
+  timestamp?: string;
   items?: Record<number, { description?: string; tags?: string }>;
 }
 
@@ -197,6 +199,10 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
     const mealTypeError = validateMealType(formData.mealType);
     if (mealTypeError) newErrors.mealType = mealTypeError;
 
+    if (isFutureDateTime(formData.timestamp)) {
+      newErrors.timestamp = "Timestamp cannot be in the future";
+    }
+
     const itemErrors: Record<number, { description?: string; tags?: string }> = {};
     formData.items.forEach((item, index) => {
       const descError = validateDescription(item.description);
@@ -291,10 +297,18 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
         <input
           type="datetime-local"
           id="timestamp"
+          max={nowLocalInputValue()}
           value={formData.timestamp || ""}
           onChange={(e) => handleTimestampChange(e.target.value)}
-          className="input mt-1"
+          className={`input mt-1 ${errors.timestamp ? "input-error" : ""}`}
+          aria-invalid={!!errors.timestamp}
+          aria-describedby={errors.timestamp ? "timestamp-error" : undefined}
         />
+        {errors.timestamp && (
+          <p id="timestamp-error" className="form-error" role="alert">
+            {errors.timestamp}
+          </p>
+        )}
       </div>
 
       {/* Food Items */}

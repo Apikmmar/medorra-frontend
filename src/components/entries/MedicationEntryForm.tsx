@@ -2,6 +2,7 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
 
 export interface MedicationFormData {
   medicationName: string;
@@ -16,6 +17,7 @@ export interface MedicationFormErrors {
   medicationName?: string;
   dosageAmount?: string;
   scheduleType?: string;
+  timestamp?: string;
 }
 
 const initialFormData: MedicationFormData = {
@@ -154,11 +156,16 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
     const scheduleError = validateField("scheduleType", formData.scheduleType);
     if (scheduleError) newErrors.scheduleType = scheduleError;
 
+    if (isFutureDateTime(formData.timestamp)) {
+      newErrors.timestamp = "Timestamp cannot be in the future";
+    }
+
     setErrors(newErrors);
     setTouched({
       medicationName: true,
       dosageAmount: true,
       scheduleType: true,
+      timestamp: true,
     });
 
     return Object.keys(newErrors).length === 0;
@@ -378,11 +385,19 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
           type="datetime-local"
           id="timestamp"
           name="timestamp"
+          max={nowLocalInputValue()}
           value={formData.timestamp}
           onChange={handleChange}
           onBlur={handleBlur}
-          className="input mt-1"
+          className={`input mt-1 ${errors.timestamp ? "input-error" : ""}`}
+          aria-invalid={!!errors.timestamp}
+          aria-describedby={errors.timestamp ? "timestamp-error" : undefined}
         />
+        {errors.timestamp && (
+          <p id="timestamp-error" className="form-error" role="alert">
+            {errors.timestamp}
+          </p>
+        )}
       </div>
 
       {/* Notes */}

@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useRef } from "react";
 import { apiClient } from "@/lib/api/client";
+import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
 
 export interface SymptomFormData {
   symptomName: string;
@@ -14,6 +15,7 @@ interface FieldErrors {
   symptomName?: string;
   severity?: string;
   notes?: string;
+  timestamp?: string;
 }
 
 export interface SymptomEntryInitialData {
@@ -132,9 +134,17 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
     newErrors.symptomName = validateField("symptomName", formData.symptomName);
     newErrors.severity = validateField("severity", formData.severity);
     newErrors.notes = validateField("notes", formData.notes);
+    newErrors.timestamp = isFutureDateTime(formData.timestamp)
+      ? "Timestamp cannot be in the future"
+      : undefined;
 
     setErrors(newErrors);
-    return !newErrors.symptomName && !newErrors.severity && !newErrors.notes;
+    return (
+      !newErrors.symptomName &&
+      !newErrors.severity &&
+      !newErrors.notes &&
+      !newErrors.timestamp
+    );
   }, [formData, validateField]);
 
   const handleSubmit = async (e: React.FormEvent) => {
@@ -253,13 +263,20 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
         <input
           id="timestamp"
           type="datetime-local"
+          max={nowLocalInputValue()}
           value={formData.timestamp}
           onChange={(e) => handleChange("timestamp", e.target.value)}
-          className="input mt-1"
+          className={`input mt-1 ${errors.timestamp ? "input-error" : ""}`}
+          aria-invalid={!!errors.timestamp}
+          aria-describedby={errors.timestamp ? "timestamp-error" : undefined}
         />
-        <p className="form-hint">
-          Defaults to current time if left empty.
-        </p>
+        {errors.timestamp ? (
+          <p id="timestamp-error" className="form-error" role="alert">
+            {errors.timestamp}
+          </p>
+        ) : (
+          <p className="form-hint">Defaults to current time if left empty.</p>
+        )}
       </div>
 
       {/* Notes */}
