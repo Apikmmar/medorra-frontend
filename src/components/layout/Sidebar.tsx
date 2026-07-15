@@ -12,12 +12,14 @@ import {
   InsightsIcon,
   TrendsIcon,
   SettingsIcon,
+  SearchIcon,
 } from "./icons";
 
 const navItems: Omit<NavItemProps, "onNavigate">[] = [
   { href: "/", label: "Dashboard", icon: <HomeIcon /> },
   { href: "/entries/new", label: "Log Entry", icon: <PlusCircleIcon /> },
   { href: "/timeline", label: "Timeline", icon: <TimelineIcon /> },
+  { href: "/search", label: "Search", icon: <SearchIcon /> },
   { href: "/insights", label: "Insights", icon: <InsightsIcon /> },
   { href: "/trends", label: "Trends", icon: <TrendsIcon /> },
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },

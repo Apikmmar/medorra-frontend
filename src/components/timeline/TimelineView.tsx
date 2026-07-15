@@ -13,6 +13,7 @@ import {
   Skeleton,
 } from "@/components/ui";
 import { EntryFilters, EntryFilterState } from "./EntryFilters";
+import { highlightMatch } from "@/lib/highlight";
 
 export interface TimelineEntry {
   entryId: string;
@@ -126,9 +127,11 @@ function getEntryDetail(entry: TimelineEntry): string | null {
 
 interface EntryRowProps {
   entry: TimelineEntry;
+  /** When set, occurrences of this term are highlighted (used by search). */
+  highlight?: string;
 }
 
-function EntryRow({ entry }: EntryRowProps) {
+export function EntryRow({ entry, highlight }: EntryRowProps) {
   const visual = getEntryVisual(entry.entryType);
   const detail = getEntryDetail(entry);
 
@@ -144,7 +147,7 @@ function EntryRow({ entry }: EntryRowProps) {
       <div className="min-w-0 flex-1">
         <div className="flex items-center gap-2">
           <p className="truncate text-sm font-semibold text-fg">
-            {getEntryTitle(entry)}
+            {highlightMatch(getEntryTitle(entry), highlight)}
           </p>
           <span
             className={`inline-flex flex-shrink-0 items-center rounded-full px-2 py-0.5 text-[11px] font-medium ${visual.badge}`}
@@ -153,10 +156,14 @@ function EntryRow({ entry }: EntryRowProps) {
           </span>
         </div>
         {detail && (
-          <p className="mt-0.5 truncate text-sm text-muted">{detail}</p>
+          <p className="mt-0.5 truncate text-sm text-muted">
+            {highlightMatch(detail, highlight)}
+          </p>
         )}
         {entry.notes && (
-          <p className="mt-1 line-clamp-2 text-xs text-faint">{entry.notes}</p>
+          <p className="mt-1 line-clamp-2 text-xs text-faint">
+            {highlightMatch(entry.notes, highlight)}
+          </p>
         )}
       </div>
 
