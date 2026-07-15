@@ -4,6 +4,7 @@ import { X } from "lucide-react";
 import { NavItem, NavItemProps } from "./NavItem";
 import { Logo } from "./Logo";
 import { Sheet, SheetContent, SheetClose, DialogTitle } from "@/components/ui";
+import { ThemeToggle } from "@/components/theme";
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -53,8 +54,9 @@ function NavBody({
           <NavItem key={item.href} {...item} onNavigate={onNavigate} />
         ))}
       </nav>
-      <div className="mt-auto px-5 py-4">
-        <p className="text-xs text-faint">Medorra · AI Symptom Diary</p>
+      <div className="mt-auto flex items-center justify-between gap-2 px-4 py-4">
+        <p className="pl-1 text-xs text-faint">AI Symptom Diary</p>
+        <ThemeToggle />
       </div>
     </>
   );

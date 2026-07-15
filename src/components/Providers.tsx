@@ -7,13 +7,16 @@
 
 import { AuthProvider, AuthApiConnector } from "@/lib/auth";
 import { OfflineProvider } from "@/lib/offline";
+import { ThemeProvider } from "@/components/theme";
 
 export function Providers({ children }: { children: React.ReactNode }) {
   return (
-    <AuthProvider>
-      <AuthApiConnector>
-        <OfflineProvider>{children}</OfflineProvider>
-      </AuthApiConnector>
-    </AuthProvider>
+    <ThemeProvider>
+      <AuthProvider>
+        <AuthApiConnector>
+          <OfflineProvider>{children}</OfflineProvider>
+        </AuthApiConnector>
+      </AuthProvider>
+    </ThemeProvider>
   );
 }

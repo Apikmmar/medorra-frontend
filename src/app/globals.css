@@ -63,6 +63,39 @@
     accent-color: rgb(13 148 136);
   }
 
+  /* Banana 🍌 — a warm, cheerful light theme built on ripe-banana yellow. */
+  :root[data-theme="banana"] {
+    /* Surfaces — warm cream, like the inside of a banana */
+    --bg: 255 251 235;
+    --surface: 255 254 247;
+    --surface-2: 254 248 218;
+    --surface-3: 252 239 199;
+
+    /* Lines */
+    --border: 242 228 176;
+    --border-strong: 228 206 130;
+
+    /* Text — deep peel-brown for contrast on yellow */
+    --fg: 61 52 24;
+    --muted: 122 106 50;
+    --faint: 166 147 79;
+
+    /* Accent — ripe banana yellow with dark peel text on fills */
+    --accent: 245 197 24;
+    --accent-hover: 230 179 16;
+    --accent-fg: 61 52 24;
+    --accent-text: 150 105 10;
+
+    /* Status (tuned for a light background) */
+    --success: 21 128 61;
+    --danger: 220 38 38;
+    --warning: 180 83 9;
+    --info: 37 99 235;
+
+    color-scheme: light;
+    accent-color: rgb(245 197 24);
+  }
+
   html {
     min-width: 320px;
     scroll-behavior: smooth;

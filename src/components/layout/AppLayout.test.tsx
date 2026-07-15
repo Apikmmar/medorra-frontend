@@ -2,6 +2,7 @@ import { describe, it, expect, vi } from "vitest";
 import { render, screen, fireEvent } from "@testing-library/react";
 import { AppLayout } from "./AppLayout";
 import { OfflineProvider } from "@/lib/offline";
+import { ThemeProvider } from "@/components/theme";
 
 // Mock next/navigation
 vi.mock("next/navigation", () => ({
@@ -52,7 +53,11 @@ vi.mock("@/lib/offline/indexed-db", () => ({
 }));
 
 function renderWithOffline(ui: React.ReactElement) {
-  return render(<OfflineProvider>{ui}</OfflineProvider>);
+  return render(
+    <ThemeProvider>
+      <OfflineProvider>{ui}</OfflineProvider>
+    </ThemeProvider>
+  );
 }
 
 describe("AppLayout", () => {

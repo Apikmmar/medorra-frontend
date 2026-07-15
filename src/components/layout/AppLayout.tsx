@@ -8,6 +8,7 @@ import { OfflineBanner } from "./OfflineBanner";
 import { Logo } from "./Logo";
 import { MenuIcon } from "./icons";
 import { AuthGuard } from "@/components/auth";
+import { ThemeToggle } from "@/components/theme";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -47,11 +48,14 @@ export function AppLayout({ children }: AppLayoutProps) {
             <span className="ml-3">
               <Logo />
             </span>
+            <ThemeToggle className="ml-auto" />
           </header>
 
           {/* Mobile top bar */}
-          <header className="sticky top-0 z-20 flex h-14 items-center justify-center border-b border-border bg-surface/80 backdrop-blur tablet:hidden">
+          <header className="sticky top-0 z-20 flex h-14 items-center justify-between border-b border-border bg-surface/80 px-2 backdrop-blur tablet:hidden">
+            <span className="w-10" aria-hidden="true" />
             <Logo />
+            <ThemeToggle />
           </header>
 
           {/* Page content */}
