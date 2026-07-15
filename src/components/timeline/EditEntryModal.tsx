@@ -1,13 +1,21 @@
 "use client";
 
 import { useState } from "react";
-import { apiClient, ApiClientError } from "@/lib/api/client";
+import { X } from "lucide-react";
+import { ApiClientError } from "@/lib/api/client";
 import {
   SymptomEntryForm,
   MedicationEntryForm,
   FoodEntryForm,
   SleepEntryForm,
 } from "@/components/entries";
+import {
+  Dialog,
+  DialogContent,
+  DialogHeader,
+  DialogTitle,
+  Button,
+} from "@/components/ui";
 
 export interface EditableEntry {
   entryId: string;
@@ -31,8 +39,6 @@ export function EditEntryModal({
 }: EditEntryModalProps) {
   const [conflictError, setConflictError] = useState<string | null>(null);
   const [notFoundError, setNotFoundError] = useState<string | null>(null);
-
-  if (!isOpen) return null;
 
   const handleEditSuccess = () => {
     setConflictError(null);
@@ -60,7 +66,11 @@ export function EditEntryModal({
   };
 
   const renderForm = () => {
-    const initialData = { ...entry, entryId: entry.entryId, version: entry.version };
+    const initialData = {
+      ...entry,
+      entryId: entry.entryId,
+      version: entry.version,
+    };
 
     switch (entry.entryType) {
       case "symptom":
@@ -100,62 +110,45 @@ export function EditEntryModal({
     }
   };
 
+  const title = `Edit ${
+    entry.entryType.charAt(0).toUpperCase() + entry.entryType.slice(1)
+  } Entry`;
+
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm overflow-y-auto"
-      role="dialog"
-      aria-modal="true"
-      aria-labelledby="edit-modal-title"
-    >
-      <div className="mx-4 my-8 w-full max-w-lg rounded-2xl border border-border bg-surface p-6 shadow-xl">
-        <div className="flex items-center justify-between mb-4">
-          <h2
-            id="edit-modal-title"
-            className="text-lg font-semibold text-fg"
-          >
-            Edit {entry.entryType.charAt(0).toUpperCase() + entry.entryType.slice(1)} Entry
-          </h2>
+    <Dialog open={isOpen} onOpenChange={(open) => !open && onClose()}>
+      <DialogContent hideCloseButton className="max-w-lg">
+        <DialogHeader className="flex-row items-center justify-between">
+          <DialogTitle>{title}</DialogTitle>
           <button
             type="button"
             onClick={onClose}
-            className="rounded p-1 text-muted transition-colors hover:text-fg"
+            className="rounded-md p-1 text-faint transition-colors hover:bg-surface-2 hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent/60"
             aria-label="Close edit modal"
           >
-            <svg
-              xmlns="http://www.w3.org/2000/svg"
-              className="h-5 w-5"
-              viewBox="0 0 20 20"
-              fill="currentColor"
-              aria-hidden="true"
-            >
-              <path
-                fillRule="evenodd"
-                d="M4.293 4.293a1 1 0 011.414 0L10 8.586l4.293-4.293a1 1 0 111.414 1.414L11.414 10l4.293 4.293a1 1 0 01-1.414 1.414L10 11.414l-4.293 4.293a1 1 0 01-1.414-1.414L8.586 10 4.293 5.707a1 1 0 010-1.414z"
-                clipRule="evenodd"
-              />
-            </svg>
+            <X className="h-5 w-5" />
           </button>
-        </div>
+        </DialogHeader>
 
         {conflictError && (
           <div
-            className="mb-4 rounded-lg bg-warning/10 border border-warning/20 p-3"
+            className="rounded-lg border border-warning/20 bg-warning/10 p-3"
             role="alert"
           >
             <p className="text-sm text-warning">{conflictError}</p>
-            <button
-              type="button"
+            <Button
+              variant="secondary"
+              size="sm"
               onClick={handleRefresh}
-              className="mt-2 rounded-lg bg-warning/15 px-3 py-1 text-sm font-medium text-warning hover:bg-warning/25"
+              className="mt-2 border-warning/30 bg-warning/15 text-warning hover:bg-warning/25"
             >
               Refresh
-            </button>
+            </Button>
           </div>
         )}
 
         {notFoundError && (
           <div
-            className="mb-4 rounded-lg bg-danger/10 border border-danger/20 p-3"
+            className="rounded-lg border border-danger/20 bg-danger/10 p-3"
             role="alert"
           >
             <p className="text-sm text-danger">{notFoundError}</p>
@@ -163,7 +156,7 @@ export function EditEntryModal({
         )}
 
         {!conflictError && !notFoundError && renderForm()}
-      </div>
-    </div>
+      </DialogContent>
+    </Dialog>
   );
 }

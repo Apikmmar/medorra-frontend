@@ -2,6 +2,7 @@
 
 import { useState, useEffect, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
+import { Skeleton } from "@/components/ui";
 import { InsightActions } from "./InsightActions";
 import { InsightAudio } from "./InsightAudio";
 import { SupportingEntriesModal } from "./SupportingEntriesModal";
@@ -99,13 +100,27 @@ export function InsightsPanel() {
 
   if (isLoading) {
     return (
-      <div
-        className="flex items-center justify-center py-12"
-        role="status"
-        aria-label="Loading insights"
-      >
-        <div className="animate-spin rounded-full h-8 w-8 border-2 border-border border-t-accent"></div>
-        <span className="ml-3 text-sm text-muted">Loading insights...</span>
+      <div role="status" aria-label="Loading insights" className="space-y-4">
+        <span className="sr-only">Loading insights...</span>
+        <div aria-hidden="true" className="space-y-4">
+          {[0, 1, 2].map((i) => (
+            <div
+              key={i}
+              className="rounded-2xl border border-border bg-surface p-4 shadow-card"
+            >
+              <div className="flex items-center gap-3">
+                <Skeleton className="h-5 w-28 rounded-full" />
+                <Skeleton className="h-2 flex-1 rounded-full" />
+              </div>
+              <Skeleton className="mt-3 h-4 w-full" />
+              <Skeleton className="mt-2 h-4 w-3/4" />
+              <div className="mt-3 flex gap-2">
+                <Skeleton className="h-6 w-32 rounded-md" />
+                <Skeleton className="h-6 w-28 rounded-md" />
+              </div>
+            </div>
+          ))}
+        </div>
       </div>
     );
   }

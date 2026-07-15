@@ -10,7 +10,7 @@ import {
 } from "@/components/entries";
 import { VoiceRecorder, VoiceEntryReview } from "@/components/voice";
 import type { VoiceDraft } from "@/lib/voice/voice-service";
-import { Card, ENTRY_VISUALS, EntryType } from "@/components/ui";
+import { Card, ENTRY_VISUALS, EntryType, toast } from "@/components/ui";
 
 const ENTRY_TYPES: EntryType[] = ["symptom", "medication", "food", "sleep"];
 
@@ -25,41 +25,24 @@ function NewEntryContent() {
   const [selectedType, setSelectedType] = useState<EntryType>(
     isEntryType(initialType) ? initialType : "symptom"
   );
-  const [successMessage, setSuccessMessage] = useState<string | null>(null);
   const [voiceDraft, setVoiceDraft] = useState<VoiceDraft | null>(null);
 
   function handleSuccess() {
     const label = ENTRY_VISUALS[selectedType].label;
-    setSuccessMessage(`${label} entry logged successfully!`);
-    setTimeout(() => setSuccessMessage(null), 3000);
+    toast.success(`${label} entry logged successfully!`);
   }
 
   function handleVoiceConfirmed(count: number) {
     setVoiceDraft(null);
-    setSuccessMessage(`${count} ${count === 1 ? "entry" : "entries"} logged from voice!`);
-    setTimeout(() => setSuccessMessage(null), 3000);
+    toast.success(
+      `${count} ${count === 1 ? "entry" : "entries"} logged from voice!`
+    );
   }
 
   return (
     <div className="mx-auto max-w-2xl">
       <h1 className="text-2xl font-bold tracking-tight text-fg">Log Entry</h1>
       <p className="mt-1 text-sm text-muted">Record a new diary entry.</p>
-
-      {successMessage && (
-        <div
-          className="mt-4 flex items-center gap-2 rounded-xl border border-success/20 bg-success/10 p-3 text-sm text-success animate-fade-in"
-          role="status"
-        >
-          <svg className="h-5 w-5 flex-shrink-0" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path
-              fillRule="evenodd"
-              d="M10 18a8 8 0 100-16 8 8 0 000 16zm3.7-9.3a1 1 0 00-1.4-1.4L9 10.58l-1.3-1.3a1 1 0 10-1.4 1.42l2 2a1 1 0 001.4 0l4-4z"
-              clipRule="evenodd"
-            />
-          </svg>
-          {successMessage}
-        </div>
-      )}
 
       {voiceDraft ? (
         <div className="mt-6">

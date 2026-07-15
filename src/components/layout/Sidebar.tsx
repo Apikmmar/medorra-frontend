@@ -1,7 +1,9 @@
 "use client";
 
+import { X } from "lucide-react";
 import { NavItem, NavItemProps } from "./NavItem";
 import { Logo } from "./Logo";
+import { Sheet, SheetContent, SheetClose, DialogTitle } from "@/components/ui";
 import {
   HomeIcon,
   PlusCircleIcon,
@@ -9,10 +11,9 @@ import {
   InsightsIcon,
   TrendsIcon,
   SettingsIcon,
-  CloseIcon,
 } from "./icons";
 
-const navItems: NavItemProps[] = [
+const navItems: Omit<NavItemProps, "onNavigate">[] = [
   { href: "/", label: "Dashboard", icon: <HomeIcon /> },
   { href: "/entries/new", label: "Log Entry", icon: <PlusCircleIcon /> },
   { href: "/timeline", label: "Timeline", icon: <TimelineIcon /> },
@@ -26,45 +27,53 @@ interface SidebarProps {
   onClose: () => void;
 }
 
+/** Shared navigation body used by both the desktop rail and the tablet drawer. */
+function NavBody({
+  onNavigate,
+  showClose,
+}: {
+  onNavigate?: () => void;
+  showClose?: boolean;
+}) {
+  return (
+    <>
+      <div className="flex h-16 items-center justify-between px-5">
+        <Logo />
+        {showClose && (
+          <SheetClose
+            aria-label="Close navigation menu"
+            className="rounded-md p-1 text-muted transition-colors hover:bg-surface-2 hover:text-fg focus:outline-none focus:ring-2 focus:ring-accent/60"
+          >
+            <X className="h-5 w-5" />
+          </SheetClose>
+        )}
+      </div>
+      <nav className="flex flex-col gap-1 px-3" aria-label="Main navigation">
+        {navItems.map((item) => (
+          <NavItem key={item.href} {...item} onNavigate={onNavigate} />
+        ))}
+      </nav>
+      <div className="mt-auto px-5 py-4">
+        <p className="text-xs text-faint">Medorra · AI Symptom Diary</p>
+      </div>
+    </>
+  );
+}
+
 export function Sidebar({ open, onClose }: SidebarProps) {
   return (
     <>
-      {/* Backdrop for tablet when sidebar is open */}
-      {open && (
-        <div
-          className="fixed inset-0 z-30 bg-black/30 tablet:block desktop:hidden"
-          aria-hidden="true"
-          onClick={onClose}
-        />
-      )}
+      {/* Tablet drawer — Radix Sheet gives focus-trap + Escape-to-close */}
+      <Sheet open={open} onOpenChange={(o) => !o && onClose()}>
+        <SheetContent side="left" className="flex flex-col p-0 desktop:hidden">
+          <DialogTitle className="sr-only">Navigation menu</DialogTitle>
+          <NavBody onNavigate={onClose} showClose />
+        </SheetContent>
+      </Sheet>
 
-      <aside
-        className={`
-          fixed inset-y-0 left-0 z-40 w-64 transform bg-surface shadow-lg transition-transform duration-200 ease-in-out
-          desktop:translate-x-0 desktop:static desktop:z-0 desktop:shadow-none desktop:border-r desktop:border-border desktop:self-stretch
-          ${open ? "translate-x-0" : "-translate-x-full"}
-        `}
-        aria-label="Main navigation"
-        role="navigation"
-      >
-        <div className="flex h-16 items-center justify-between border-b border-border px-4">
-          <Logo />
-          <button
-            onClick={onClose}
-            className="desktop:hidden rounded-md p-1 text-muted hover:bg-surface-2 hover:text-fg"
-            aria-label="Close navigation menu"
-          >
-            <span className="h-5 w-5 block">
-              <CloseIcon />
-            </span>
-          </button>
-        </div>
-
-        <nav className="flex flex-col gap-1 p-4" aria-label="Primary">
-          {navItems.map((item) => (
-            <NavItem key={item.href} {...item} />
-          ))}
-        </nav>
+      {/* Desktop persistent rail */}
+      <aside className="hidden w-64 flex-col self-stretch border-r border-border bg-surface desktop:flex">
+        <NavBody />
       </aside>
     </>
   );

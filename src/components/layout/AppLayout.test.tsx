@@ -1,5 +1,5 @@
 import { describe, it, expect, vi } from "vitest";
-import { render, screen } from "@testing-library/react";
+import { render, screen, fireEvent } from "@testing-library/react";
 import { AppLayout } from "./AppLayout";
 import { OfflineProvider } from "@/lib/offline";
 
@@ -174,11 +174,16 @@ describe("AppLayout", () => {
     expect(openMenuBtn).toBeInTheDocument();
   });
 
-  it("renders close menu button in sidebar", () => {
+  it("shows a close menu button once the drawer is opened", () => {
     renderWithOffline(
       <AppLayout>
         <div>Content</div>
       </AppLayout>
+    );
+
+    // The drawer (Radix Sheet) mounts on open, so open it via the hamburger.
+    fireEvent.click(
+      screen.getByRole("button", { name: "Open navigation menu" })
     );
 
     const closeMenuBtn = screen.getByRole("button", {

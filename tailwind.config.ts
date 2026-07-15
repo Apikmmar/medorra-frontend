@@ -33,6 +33,22 @@ const config: Config = {
           fg: token("--accent-fg"),
           text: token("--accent-text"),
         },
+        // shadcn-compatible aliases — resolve to the same teal token system so
+        // primitives copied from the shadcn registry inherit our theme.
+        primary: {
+          DEFAULT: token("--accent"),
+          foreground: token("--accent-fg"),
+        },
+        ring: token("--accent"),
+        input: token("--border"),
+        popover: {
+          DEFAULT: token("--surface"),
+          foreground: token("--fg"),
+        },
+        destructive: {
+          DEFAULT: token("--danger"),
+          foreground: token("--fg"),
+        },
         success: token("--success"),
         danger: token("--danger"),
         warning: token("--warning"),
@@ -73,14 +89,18 @@ const config: Config = {
           "0%": { opacity: "0", transform: "translateY(12px)" },
           "100%": { opacity: "1", transform: "translateY(0)" },
         },
+        shimmer: {
+          "100%": { transform: "translateX(100%)" },
+        },
       },
       animation: {
         "fade-in": "fadeIn 0.25s ease-out",
         "slide-up": "slideUp 0.3s ease-out",
+        shimmer: "shimmer 1.6s infinite",
       },
     },
   },
-  plugins: [],
+  plugins: [require("tailwindcss-animate")],
 };
 
 export default config;

@@ -2,8 +2,16 @@
 
 import { useState, useEffect, useCallback } from "react";
 import Link from "next/link";
+import { SlidersHorizontal } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
-import { Card, Spinner, EmptyState, Pagination, getEntryVisual } from "@/components/ui";
+import {
+  Card,
+  EmptyState,
+  Pagination,
+  getEntryVisual,
+  Button,
+  Skeleton,
+} from "@/components/ui";
 import { EntryFilters, EntryFilterState } from "./EntryFilters";
 
 export interface TimelineEntry {
@@ -162,6 +170,36 @@ function EntryRow({ entry }: EntryRowProps) {
   );
 }
 
+/** Placeholder rows shown while a page is loading. */
+function TimelineSkeleton() {
+  return (
+    <div className="space-y-5">
+      <span role="status" aria-label="Loading entries..." className="sr-only">
+        Loading entries...
+      </span>
+      <div className="space-y-5" aria-hidden="true">
+        {[0, 1].map((group) => (
+          <section key={group}>
+            <Skeleton className="mb-2 ml-1 h-3 w-24" />
+            <Card className="divide-y divide-border overflow-hidden">
+              {[0, 1, 2].map((row) => (
+                <div key={row} className="flex items-start gap-3 px-4 py-3.5 sm:px-5">
+                  <Skeleton className="h-9 w-9 flex-shrink-0 rounded-xl" />
+                  <div className="flex-1 space-y-2 py-0.5">
+                    <Skeleton className="h-4 w-1/2" />
+                    <Skeleton className="h-3 w-1/3" />
+                  </div>
+                  <Skeleton className="h-3 w-10" />
+                </div>
+              ))}
+            </Card>
+          </section>
+        ))}
+      </div>
+    </div>
+  );
+}
+
 function countActiveFilters(f: EntryFilterState): number {
   let n = 0;
   if (f.entryType) n += 1;
@@ -290,26 +328,20 @@ export function TimelineView() {
           )}
         </p>
 
-        <button
+        <Button
           type="button"
+          variant="secondary"
           onClick={() => setShowFilters((v) => !v)}
-          className="inline-flex items-center gap-2 rounded-lg border border-border bg-surface-2 px-3 py-2 text-sm font-medium text-fg transition-colors hover:bg-surface-3"
           aria-expanded={showFilters}
         >
-          <svg className="h-4 w-4" viewBox="0 0 20 20" fill="currentColor" aria-hidden="true">
-            <path
-              fillRule="evenodd"
-              d="M2 4.5A.5.5 0 012.5 4h15a.5.5 0 01.4.8l-5.9 7.4V17a.5.5 0 01-.72.45l-3-1.5A.5.5 0 018 15.5v-3.3L2.1 4.8A.5.5 0 012 4.5z"
-              clipRule="evenodd"
-            />
-          </svg>
+          <SlidersHorizontal className="h-4 w-4" />
           Filters
           {activeFilters > 0 && (
             <span className="flex h-5 min-w-[1.25rem] items-center justify-center rounded-full bg-accent px-1 text-[11px] font-semibold text-accent-fg">
               {activeFilters}
             </span>
           )}
-        </button>
+        </Button>
       </div>
 
       {/* Collapsible filter panel */}
@@ -321,9 +353,7 @@ export function TimelineView() {
 
       {/* Content */}
       {isLoading ? (
-        <Card className="py-16">
-          <Spinner label="Loading entries..." />
-        </Card>
+        <TimelineSkeleton />
       ) : error ? (
         <div
           className="rounded-2xl border border-danger/20 bg-danger/10 p-4"
