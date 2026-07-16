@@ -11,6 +11,7 @@ import { MenuIcon, SearchIcon } from "./icons";
 import { AuthGuard } from "@/components/auth";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui";
+import { OnboardingDialog } from "@/components/onboarding";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -84,6 +85,9 @@ export function AppLayout({ children }: AppLayoutProps) {
         {/* Bottom navigation - mobile only */}
         <BottomNav />
       </div>
+
+      {/* First-run guided tour (once per device) */}
+      <OnboardingDialog />
     </AuthGuard>
   );
 }

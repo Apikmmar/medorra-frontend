@@ -1,8 +1,9 @@
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
+import { CalendarClock } from "lucide-react";
 import { apiClient } from "@/lib/api/client";
-import { Skeleton } from "@/components/ui";
+import { Skeleton, Card } from "@/components/ui";
 import { InsightActions } from "./InsightActions";
 import { InsightAudio } from "./InsightAudio";
 import { SupportingEntriesModal } from "./SupportingEntriesModal";
@@ -50,6 +51,7 @@ export function InsightsPanel() {
   const [insights, setInsights] = useState<Insight[]>([]);
   const [thresholdMet, setThresholdMet] = useState<boolean>(true);
   const [daysRemaining, setDaysRemaining] = useState<number>(0);
+  const [totalDistinctDays, setTotalDistinctDays] = useState<number>(0);
   const [isLoading, setIsLoading] = useState<boolean>(true);
   const [error, setError] = useState<string | null>(null);
   const [modalEntryIds, setModalEntryIds] = useState<string[] | null>(null);
@@ -73,6 +75,7 @@ export function InsightsPanel() {
       setInsights(normalizedInsights);
       setThresholdMet(data.thresholdMet);
       setDaysRemaining(data.daysRemaining);
+      setTotalDistinctDays(data.totalDistinctDays ?? 0);
     } catch (err) {
       const message =
         err instanceof Error ? err.message : "Failed to load insights";
@@ -154,15 +157,52 @@ export function InsightsPanel() {
         </p>
       </div>
 
-      {/* Threshold not met */}
-      {!thresholdMet && (
-        <div className="text-center py-8">
-          <p className="text-muted text-lg">
-            {daysRemaining} more days of logging needed before pattern analysis
-            can begin.
-          </p>
-        </div>
-      )}
+      {/* Threshold not met — show progress toward the analysis window */}
+      {!thresholdMet &&
+        (() => {
+          const totalDays = totalDistinctDays + daysRemaining;
+          const pct =
+            totalDays > 0
+              ? Math.min(100, Math.round((totalDistinctDays / totalDays) * 100))
+              : 0;
+          return (
+            <Card className="p-6">
+              <div className="flex items-center gap-3">
+                <span
+                  className="flex h-10 w-10 flex-shrink-0 items-center justify-center rounded-xl bg-accent/10 text-accent-text"
+                  aria-hidden="true"
+                >
+                  <CalendarClock className="h-5 w-5" />
+                </span>
+                <div>
+                  <p className="text-sm font-semibold text-fg">
+                    Building your baseline
+                  </p>
+                  <p className="text-xs text-muted">
+                    Day {totalDistinctDays} of {totalDays}
+                  </p>
+                </div>
+              </div>
+
+              <div className="mt-4 h-2 w-full overflow-hidden rounded-full bg-surface-3">
+                <div
+                  className="h-full rounded-full bg-accent transition-all"
+                  style={{ width: `${pct}%` }}
+                  role="progressbar"
+                  aria-valuenow={totalDistinctDays}
+                  aria-valuemin={0}
+                  aria-valuemax={totalDays}
+                  aria-label="Days logged toward pattern analysis"
+                />
+              </div>
+
+              <p className="mt-3 text-sm text-muted">
+                {daysRemaining} more days of logging needed before pattern
+                analysis can begin.
+              </p>
+            </Card>
+          );
+        })()}
 
       {/* Threshold met but no insights */}
       {thresholdMet && insights.length === 0 && (
