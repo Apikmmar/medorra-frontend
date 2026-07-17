@@ -12,6 +12,7 @@ import { AuthGuard } from "@/components/auth";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui";
 import { OnboardingDialog } from "@/components/onboarding";
+import { useAuth } from "@/lib/auth";
 
 interface AppLayoutProps {
   children: React.ReactNode;
@@ -20,9 +21,18 @@ interface AppLayoutProps {
 export function AppLayout({ children }: AppLayoutProps) {
   const [sidebarOpen, setSidebarOpen] = useState(false);
   const pathname = usePathname();
+  const { isAuthenticated } = useAuth();
 
   // Auth pages get a clean layout without sidebar/nav
   if (pathname?.startsWith("/auth")) {
+    return <>{children}</>;
+  }
+
+  // Landing page ("/") is public: guests see the marketing page with its own
+  // full-screen chrome. Logged-in users fall through to the app chrome so the
+  // dashboard renders with the sidebar/nav. The page component itself decides
+  // whether to show the landing page or the dashboard.
+  if (pathname === "/" && !isAuthenticated) {
     return <>{children}</>;
   }
 

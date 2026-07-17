@@ -22,8 +22,9 @@ export function AuthGuard({ children }: AuthGuardProps) {
     // Don't redirect while still loading
     if (isLoading) return;
 
-    // Skip guard for auth pages
+    // Skip guard for auth pages and the public landing page ("/")
     if (pathname?.startsWith("/auth")) return;
+    if (pathname === "/") return;
 
     // Redirect to login if not authenticated
     if (!isAuthenticated) {
