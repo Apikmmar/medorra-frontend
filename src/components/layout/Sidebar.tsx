@@ -13,6 +13,7 @@ import {
   TrendsIcon,
   SettingsIcon,
   SearchIcon,
+  FeedbackIcon,
 } from "./icons";
 
 const navItems: Omit<NavItemProps, "onNavigate">[] = [
@@ -22,6 +23,7 @@ const navItems: Omit<NavItemProps, "onNavigate">[] = [
   { href: "/search", label: "Search", icon: <SearchIcon /> },
   { href: "/insights", label: "Insights", icon: <InsightsIcon /> },
   { href: "/trends", label: "Trends", icon: <TrendsIcon /> },
+  { href: "/feedback", label: "Feedback", icon: <FeedbackIcon /> },
   { href: "/settings", label: "Settings", icon: <SettingsIcon /> },
 ];
 
