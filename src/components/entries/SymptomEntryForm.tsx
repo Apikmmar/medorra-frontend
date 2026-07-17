@@ -37,12 +37,14 @@ export interface SymptomEntryFormProps {
 export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEntryFormProps) {
   const isEditMode = !!initialData;
 
-  const [formData, setFormData] = useState<SymptomFormData>({
+  const initialFormData: SymptomFormData = {
     symptomName: initialData?.symptomName ?? "",
     severity: initialData?.severity ?? 5,
     timestamp: initialData?.timestamp ?? "",
     notes: initialData?.notes ?? "",
-  });
+  };
+
+  const [formData, setFormData] = useState<SymptomFormData>(initialFormData);
   const [errors, setErrors] = useState<FieldErrors>({});
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [submitError, setSubmitError] = useState<string | null>(null);
@@ -177,6 +179,9 @@ export function SymptomEntryForm({ initialData, onSuccess, onError }: SymptomEnt
         await apiClient.put(`/entries/symptom/${initialData.entryId}`, payload);
       } else {
         await apiClient.post("/entries/symptom", payload);
+        // Reset the form so a fresh entry can be logged right away.
+        setFormData(initialFormData);
+        setErrors({});
       }
       onSuccess?.();
     } catch (err) {

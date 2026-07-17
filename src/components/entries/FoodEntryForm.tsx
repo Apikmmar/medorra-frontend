@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
-import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
+import {
+  isFutureDateTime,
+  localInputToIso,
+  nowLocalInputValue,
+} from "@/lib/validation/time";
 
 const MEAL_TYPES = ["breakfast", "lunch", "dinner", "snack", "beverage"] as const;
 type MealType = (typeof MEAL_TYPES)[number];
@@ -229,7 +233,9 @@ export function FoodEntryForm({ initialData, onSuccess, onError }: FoodEntryForm
         entryType: "food",
         mealType: formData.mealType,
         items: formData.items,
-        ...(formData.timestamp ? { timestamp: formData.timestamp } : {}),
+        ...(formData.timestamp
+          ? { timestamp: localInputToIso(formData.timestamp) }
+          : {}),
       };
 
       if (isEditMode && initialData) {

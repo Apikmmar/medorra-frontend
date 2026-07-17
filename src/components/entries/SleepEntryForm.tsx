@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
-import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
+import {
+  isFutureDateTime,
+  localInputToIso,
+  nowLocalInputValue,
+} from "@/lib/validation/time";
 
 interface SleepSegment {
   startTime: string;
@@ -123,9 +127,10 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
           return "End time must be after start time";
         }
       }
-      if (isFutureDateTime(segment.startTime) || isFutureDateTime(segment.endTime)) {
-        return "Sleep times cannot be in the future";
-      }
+      // Note: the "future" check is intentionally NOT done here. Inline
+      // validation only runs on edit, so a time picked while momentarily ahead
+      // of the clock would stay flagged as future even after the clock passes
+      // it. Future is enforced at submit instead, against a fresh clock.
       return "";
     },
     []
@@ -274,6 +279,12 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
       if (err) segmentErrors[i] = err;
       if (!seg.startTime || !seg.endTime) {
         segmentErrors[i] = "Start and end times are required";
+      } else if (
+        isFutureDateTime(seg.startTime) ||
+        isFutureDateTime(seg.endTime)
+      ) {
+        // Checked here (not inline) against a fresh clock so it never goes stale.
+        segmentErrors[i] = "Sleep times cannot be in the future";
       }
     });
 
@@ -306,8 +317,8 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
       const payload: Record<string, unknown> = {
         entryType: "sleep",
         segments: formData.segments.map((seg) => ({
-          startTime: seg.startTime,
-          endTime: seg.endTime,
+          startTime: localInputToIso(seg.startTime),
+          endTime: localInputToIso(seg.endTime),
           durationMinutes: seg.durationMinutes,
         })),
         totalDuration,
@@ -383,7 +394,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
               )}
             </div>
 
-            <div className="grid grid-cols-1 gap-3 tablet:grid-cols-3">
+            <div className="grid grid-cols-1 gap-3 tablet:grid-cols-2">
               <div>
                 <label
                   htmlFor={`segment-start-${index}`}
@@ -424,7 +435,7 @@ export function SleepEntryForm({ initialData, onSuccess, onError }: SleepEntryFo
                 />
               </div>
 
-              <div>
+              <div className="tablet:col-span-2">
                 <span className="block text-sm text-muted">Duration</span>
                 <p
                   className="mt-1 rounded-lg bg-surface border border-border px-3 py-2 text-sm text-fg"

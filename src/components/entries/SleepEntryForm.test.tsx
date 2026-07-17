@@ -187,8 +187,10 @@ describe("SleepEntryForm", () => {
         entryType: "sleep",
         segments: [
           {
-            startTime: "2024-01-15T22:00",
-            endTime: "2024-01-16T06:00",
+            // Sent as UTC ISO so the backend doesn't misread local time as UTC.
+            // Computed from the input (not hardcoded) to stay timezone-agnostic.
+            startTime: new Date("2024-01-15T22:00").toISOString(),
+            endTime: new Date("2024-01-16T06:00").toISOString(),
             durationMinutes: 480,
           },
         ],

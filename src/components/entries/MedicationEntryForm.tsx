@@ -2,7 +2,11 @@
 
 import { useState, useCallback } from "react";
 import { apiClient } from "@/lib/api/client";
-import { isFutureDateTime, nowLocalInputValue } from "@/lib/validation/time";
+import {
+  isFutureDateTime,
+  localInputToIso,
+  nowLocalInputValue,
+} from "@/lib/validation/time";
 
 export interface MedicationFormData {
   medicationName: string;
@@ -198,7 +202,7 @@ export function MedicationEntryForm({ initialData, onSuccess, onError }: Medicat
         }
 
         if (formData.timestamp) {
-          payload.timestamp = formData.timestamp;
+          payload.timestamp = localInputToIso(formData.timestamp);
         }
 
         if (formData.notes) {

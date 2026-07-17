@@ -127,6 +127,20 @@
     @apply focus:border-accent focus:outline-none focus:ring-2 focus:ring-accent/40;
   }
 
+  /*
+   * Date/time pickers must always show the full date AND time, on any screen.
+   * WebKit clips the native value when the field is narrower than its content
+   * (e.g. inside multi-column grids). fit-content keeps the field at least as
+   * wide as the value it renders, so nothing gets cut off; w-full still lets it
+   * fill wider containers. min-w-0 is dropped so grid/flex can't shrink it.
+   */
+  input[type="datetime-local"],
+  input[type="date"],
+  input[type="time"] {
+    min-width: -moz-fit-content;
+    min-width: fit-content;
+  }
+
   .input-error {
     @apply border-danger focus:border-danger focus:ring-danger/40;
   }
