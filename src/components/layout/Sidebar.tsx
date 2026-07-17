@@ -77,8 +77,8 @@ export function Sidebar({ open, onClose }: SidebarProps) {
         </SheetContent>
       </Sheet>
 
-      {/* Desktop persistent rail */}
-      <aside className="hidden w-64 flex-col self-stretch border-r border-border bg-surface desktop:flex">
+      {/* Desktop persistent rail — sticky so it stays put while content scrolls */}
+      <aside className="sticky top-0 hidden h-screen w-64 flex-col overflow-y-auto border-r border-border bg-surface desktop:flex">
         <NavBody />
       </aside>
     </>

@@ -11,6 +11,7 @@ import {
 import { Logo } from "@/components/layout/Logo";
 import { ThemeToggle } from "@/components/theme";
 import { Button } from "@/components/ui";
+import { Reveal } from "./Reveal";
 
 const FEATURES = [
   {
@@ -94,69 +95,89 @@ export function LandingPage() {
       {/* Hero */}
       <section className="relative overflow-hidden">
         <div
-          className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 rounded-full bg-accent/20 blur-3xl"
+          className="pointer-events-none absolute -right-24 -top-24 h-80 w-80 animate-pulse rounded-full bg-accent/20 blur-3xl [animation-duration:7s] motion-reduce:animate-none"
           aria-hidden="true"
         />
         <div
-          className="pointer-events-none absolute -left-24 top-40 h-72 w-72 rounded-full bg-brand-500/10 blur-3xl"
+          className="pointer-events-none absolute -left-24 top-40 h-72 w-72 animate-pulse rounded-full bg-brand-500/10 blur-3xl [animation-duration:9s] motion-reduce:animate-none"
           aria-hidden="true"
         />
         <div className="relative mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28 lg:py-32">
           <div className="mx-auto max-w-3xl text-center">
-            <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-medium text-accent-text">
-              <Sparkles className="h-3.5 w-3.5" />
-              AI Symptom Diary
-            </span>
-            <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
-              Understand your health,
-              <span className="bg-gradient-to-r from-brand-500 to-accent bg-clip-text text-transparent">
-                {" "}
-                one entry at a time
+            <Reveal>
+              <span className="inline-flex items-center gap-1.5 rounded-full border border-accent/20 bg-accent/10 px-3 py-1 text-xs font-medium text-accent-text">
+                <Sparkles className="h-3.5 w-3.5 animate-pulse motion-reduce:animate-none" />
+                AI Symptom Diary
               </span>
-            </h1>
-            <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
-              Medorra turns everyday symptom, medication, food, and sleep logs
-              into AI-powered insights — so you can spot patterns and take
-              control of your health.
-            </p>
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg">
-                <Link href="/auth/register">
-                  Start your diary
-                  <ArrowRight className="h-4 w-4" />
-                </Link>
-              </Button>
-              <Button asChild size="lg" variant="outline">
-                <Link href="/auth/login">I already have an account</Link>
-              </Button>
-            </div>
+            </Reveal>
+            <Reveal delay={100}>
+              <h1 className="mt-6 text-4xl font-bold tracking-tight sm:text-5xl lg:text-6xl">
+                Understand your health,
+                <span className="bg-gradient-to-r from-brand-500 to-accent bg-clip-text text-transparent">
+                  {" "}
+                  one entry at a time
+                </span>
+              </h1>
+            </Reveal>
+            <Reveal delay={200}>
+              <p className="mx-auto mt-6 max-w-2xl text-lg text-muted">
+                Medorra turns everyday symptom, medication, food, and sleep logs
+                into AI-powered insights — so you can spot patterns and take
+                control of your health.
+              </p>
+            </Reveal>
+            <Reveal delay={300}>
+              <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+                <Button
+                  asChild
+                  size="lg"
+                  className="group/cta transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transform-none"
+                >
+                  <Link href="/auth/register">
+                    Start your diary
+                    <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transform-none" />
+                  </Link>
+                </Button>
+                <Button
+                  asChild
+                  size="lg"
+                  variant="outline"
+                  className="transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transform-none"
+                >
+                  <Link href="/auth/login">I already have an account</Link>
+                </Button>
+              </div>
+            </Reveal>
           </div>
         </div>
       </section>
 
       {/* Features */}
       <section className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-        <div className="mx-auto max-w-2xl text-center">
-          <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-            Everything you need to track and understand
-          </h2>
-          <p className="mt-4 text-muted">
-            Simple to log. Powerful to review. Designed to fit the way you
-            actually live.
-          </p>
-        </div>
+        <Reveal>
+          <div className="mx-auto max-w-2xl text-center">
+            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+              Everything you need to track and understand
+            </h2>
+            <p className="mt-4 text-muted">
+              Simple to log. Powerful to review. Designed to fit the way you
+              actually live.
+            </p>
+          </div>
+        </Reveal>
         <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-3">
-          {FEATURES.map(({ icon: Icon, title, description }) => (
-            <div
+          {FEATURES.map(({ icon: Icon, title, description }, i) => (
+            <Reveal
               key={title}
-              className="rounded-2xl border border-border bg-surface p-6 shadow-card"
+              delay={(i % 3) * 100}
+              className="group rounded-2xl border border-border bg-surface p-6 shadow-card transition-all duration-200 hover:-translate-y-1 hover:border-border-strong hover:shadow-card-hover motion-reduce:transform-none"
             >
-              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent-text">
+              <span className="flex h-11 w-11 items-center justify-center rounded-xl bg-accent/10 text-accent-text transition-transform duration-200 group-hover:scale-110 group-hover:-rotate-6 motion-reduce:transform-none">
                 <Icon className="h-5 w-5" />
               </span>
               <h3 className="mt-4 text-lg font-semibold">{title}</h3>
               <p className="mt-2 text-sm text-muted">{description}</p>
-            </div>
+            </Reveal>
           ))}
         </div>
       </section>
@@ -164,23 +185,25 @@ export function LandingPage() {
       {/* How it works */}
       <section className="border-y border-border bg-surface">
         <div className="mx-auto max-w-6xl px-4 py-16 sm:px-6 sm:py-24">
-          <div className="mx-auto max-w-2xl text-center">
-            <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
-              How Medorra works
-            </h2>
-            <p className="mt-4 text-muted">
-              Three steps from scattered notes to real understanding.
-            </p>
-          </div>
+          <Reveal>
+            <div className="mx-auto max-w-2xl text-center">
+              <h2 className="text-3xl font-bold tracking-tight sm:text-4xl">
+                How Medorra works
+              </h2>
+              <p className="mt-4 text-muted">
+                Three steps from scattered notes to real understanding.
+              </p>
+            </div>
+          </Reveal>
           <div className="mt-14 grid gap-8 sm:grid-cols-3">
-            {STEPS.map(({ step, title, description }) => (
-              <div key={step} className="text-center">
-                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-lg font-bold text-white shadow-sm">
+            {STEPS.map(({ step, title, description }, i) => (
+              <Reveal key={step} delay={i * 120} className="group text-center">
+                <span className="mx-auto flex h-12 w-12 items-center justify-center rounded-full bg-gradient-to-br from-brand-500 to-brand-700 text-lg font-bold text-white shadow-sm transition-transform duration-200 group-hover:scale-110 motion-reduce:transform-none">
                   {step}
                 </span>
                 <h3 className="mt-5 text-lg font-semibold">{title}</h3>
                 <p className="mt-2 text-sm text-muted">{description}</p>
-              </div>
+              </Reveal>
             ))}
           </div>
         </div>
@@ -188,26 +211,32 @@ export function LandingPage() {
 
       {/* CTA */}
       <section className="mx-auto max-w-6xl px-4 py-20 sm:px-6 sm:py-28">
-        <div className="relative overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-brand-800 to-brand-900 p-10 text-center shadow-card sm:p-16">
-          <div
-            className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl"
-            aria-hidden="true"
-          />
-          <div className="relative">
-            <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
-              Start understanding your health today
-            </h2>
-            <p className="mx-auto mt-4 max-w-xl text-brand-100">
-              It's free to begin. Log your first entry in under a minute.
-            </p>
-            <Button asChild size="lg" className="mt-8">
-              <Link href="/auth/register">
-                Create your free account
-                <ArrowRight className="h-4 w-4" />
-              </Link>
-            </Button>
+        <Reveal>
+          <div className="group/cta relative overflow-hidden rounded-3xl border border-accent/20 bg-gradient-to-br from-brand-800 to-brand-900 p-10 text-center shadow-card transition-shadow duration-300 hover:shadow-card-hover sm:p-16">
+            <div
+              className="pointer-events-none absolute -right-16 -top-16 h-56 w-56 rounded-full bg-accent/20 blur-3xl transition-transform duration-700 ease-out group-hover/cta:translate-x-6 group-hover/cta:translate-y-3 motion-reduce:transition-none"
+              aria-hidden="true"
+            />
+            <div className="relative">
+              <h2 className="text-3xl font-bold tracking-tight text-white sm:text-4xl">
+                Start understanding your health today
+              </h2>
+              <p className="mx-auto mt-4 max-w-xl text-brand-100">
+                It's free to begin. Log your first entry in under a minute.
+              </p>
+              <Button
+                asChild
+                size="lg"
+                className="mt-8 transition-transform duration-200 hover:-translate-y-0.5 active:translate-y-0 motion-reduce:transform-none"
+              >
+                <Link href="/auth/register">
+                  Create your free account
+                  <ArrowRight className="h-4 w-4 transition-transform duration-200 group-hover/cta:translate-x-1 motion-reduce:transform-none" />
+                </Link>
+              </Button>
+            </div>
           </div>
-        </div>
+        </Reveal>
       </section>
 
       {/* Footer */}
